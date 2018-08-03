@@ -1,0 +1,6 @@
+[submodule "third/fmt"]
+	path = third/fmt
+	url = https://github.com/fmtlib/fmt.git
+[submodule "third/rapidjson"]
+	path = third/rapidjson
+	url = https://github.com/Tencent/rapidjson.git
