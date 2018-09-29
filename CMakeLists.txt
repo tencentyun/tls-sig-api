@@ -29,7 +29,7 @@ endif()
 
 include_directories(
     third/rapidjson/include
-    third/fmt/include
+    third/fmt
     ${ZLIB_INCLUDE_DIRS}
     ${OPENSSL_INCLUDE_DIR}
     )
