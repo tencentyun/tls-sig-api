@@ -20,6 +20,8 @@ static void usage(const string& prog)
 {
 	cout << "current version: " << API_VERSION << endl;
 	cout << "Usage:" << endl;
+	cout << "\tgen sig: " << prog << " gen_without_expire pri_key_file sig_file sdkappid identifier" << endl;
+	cout << "\tgen sig e.g.: " << prog << " gen_without_expire ec_key.pem sig 1400001052 xiaojun" << endl;
 	cout << "\tgen sig: " << prog << " gen pri_key_file sig_file sdkappid identifier" << endl;
 	cout << "\tgen sig e.g.: " << prog << " gen ec_key.pem sig 1400001052 xiaojun" << endl;
 	cout << "\tgen sig: " << prog << " genexpire pri_key_file sig_file sdkappid identifier expiredtime" << endl;
@@ -31,6 +33,68 @@ static void usage(const string& prog)
 	cout << "\tverify sig: " << prog << " verifyuser pub_key_file sig_file sdkappid identifier" << endl;
 	cout << "\tverify sig e.g.: " << prog << " verifyuser public.pem sig 1400001052 xiaojun" << endl;
 	cout << "\tdump sig e.g.: " << prog << " dump sigtext" << endl;
+}
+
+// 默认 180 有效期
+static int gen_sig_without_expire(const string& pri_key_file, const string& sig_file, uint32_t sdkappid, const string& identifier)
+{
+#if defined(WIN32) || defined(WIN64)
+	FILE * pri_key_fp = NULL;
+	fopen_s(&pri_key_fp, pri_key_file.c_str(), "r");
+#else
+	FILE * pri_key_fp = fopen(pri_key_file.c_str(), "r");
+#endif
+	if (!pri_key_fp)
+	{
+		cout << "open file " << pri_key_file << " failed" << endl;
+		return -1;
+	}
+
+	// 读取私钥文件内容
+	char pri_key_buf[1024] = {0};
+	int read_cnt = (int)fread(pri_key_buf, sizeof(char), sizeof(pri_key_buf), pri_key_fp);
+	if (sizeof(pri_key_buf) > (unsigned int)read_cnt && 0 != ferror(pri_key_fp))
+	{
+		cout << "read file " << pri_key_file << " failed" << endl;
+		return -2;
+	}
+	fclose(pri_key_fp);
+	pri_key_fp = NULL;
+
+	// 通过私钥文件内容加密传入参数生成 sig
+	string sig;
+	string err_msg;
+    string str_pri_key(pri_key_buf, read_cnt);
+    int ret;
+    ret = genUserSig(sdkappid, identifier, str_pri_key, sig);
+    if (0 != ret) {
+        cout << "error msg: " << err_msg << " return " << ret << endl;
+        return -3;
+    }
+
+#if defined(WIN32) || defined(WIN64)
+	FILE * sig_fp = NULL;
+	fopen_s(&sig_fp, sig_file.c_str(), "w+");
+#else
+	FILE* sig_fp = fopen(sig_file.c_str(),"w+");
+#endif
+	if (!sig_fp)
+	{
+		cout << "open file " << sig_file << "failed" << endl;
+		return -4;
+	}
+
+	// 将签名写入文件
+	int written_cnt = (int)fwrite(sig.c_str(), sizeof(char), sig.size(), sig_fp);
+	if (sig.size() > (unsigned int)written_cnt && 0 != ferror(sig_fp))
+	{
+		cout << "write sig content failed" << endl;
+		return -5;
+	}
+
+	cout << "generate sig ok" << endl;
+
+	return 0;
 }
 
 // 指定有效期生成签名
@@ -212,7 +276,15 @@ int main(int argc, char * argv[])
 	int expire;
     
     int ret;
-    if (0 == strcmp(cmd, "gen") && argc == 6)
+    if (0 == strcmp(cmd, "gen_without_expire") && argc == 6)
+    {
+        pri_key_file = argv[2];
+        sig_file = argv[3];
+        sdkappid = atoi(argv[4]);
+        identifier = argv[5];
+        ret = gen_sig_without_expire(pri_key_file, sig_file, sdkappid, identifier);
+    }
+    else if (0 == strcmp(cmd, "gen") && argc == 6)
     {
         pri_key_file = argv[2];
         sig_file = argv[3];

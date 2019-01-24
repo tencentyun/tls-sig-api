@@ -42,8 +42,8 @@ else()
     add_library(tlsignature src/tls_signature.cpp)
 endif()
 target_link_libraries(tlsignature
-    ZLIB::ZLIB
-    OpenSSL::Crypto
+    -lz
+    ${OPENSSL_CRYPTO_LIBRARIES}
 )
 
 add_executable(signature src/signature.cpp)
