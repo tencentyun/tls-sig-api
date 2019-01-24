@@ -238,7 +238,7 @@ TLS_API int tls_check_userbuf_ticket(
     std::string& strErrMsg
 );
 
-TLS_API int genUserSig(uint32_t sdkappid, const std::string& identifier, const std::string& priKey, std::string& sig);
+TLS_API int genSig(uint32_t sdkappid, const std::string& identifier, const std::string& priKey, std::string& sig);
 
 namespace tls_signature_inner {
 TLS_API int SigToJson(const std::string &sig, std::string &json, std::string  &errmsg);

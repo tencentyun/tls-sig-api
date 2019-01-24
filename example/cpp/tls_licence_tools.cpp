@@ -66,7 +66,7 @@ static int gen_sig_without_expire(const string& pri_key_file, const string& sig_
 	string err_msg;
     string str_pri_key(pri_key_buf, read_cnt);
     int ret;
-    ret = genUserSig(sdkappid, identifier, str_pri_key, sig);
+    ret = genSig(sdkappid, identifier, str_pri_key, sig);
     if (0 != ret) {
         cout << "error msg: " << err_msg << " return " << ret << endl;
         return -3;
