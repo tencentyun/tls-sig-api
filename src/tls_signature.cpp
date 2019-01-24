@@ -773,7 +773,7 @@ TLS_API int tls_check_userbuf_ticket(
     return 0;
 }
 
-TLS_API int genUserSig(uint32_t sdkappid, const std::string& identifier, const std::string& priKey, std::string& sig) {
+TLS_API int genSig(uint32_t sdkappid, const std::string& identifier, const std::string& priKey, std::string& sig) {
     std::string innerPriKey = priKey;
     std::string errMsg;
     return tls_gen_signature_ex2(sdkappid, identifier, sig, innerPriKey, errMsg);
