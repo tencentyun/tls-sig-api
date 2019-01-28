@@ -40,6 +40,7 @@ make install
 * BUILD_EXAMPLE_CS=ON 需要安装c#编译器
 
 ## 使用
+
 ### 使用默认有效期
 ```C
 #include "tls_signature.h"
@@ -49,9 +50,9 @@ make install
 std::string sig;
 int ret = gen_sig(140000000, "xiaojun", priKeyContent, sig);
 if (0 != ret) {
-	std::cout << "genSig failed " << ret << std::endl;
+	std::cout << "gen_sig failed " << ret << std::endl;
 } else {
-	std::cout << "genSig " << sig << std::endl;
+	std::cout << "gen_sig " << sig << std::endl;
 }
 
 ```
