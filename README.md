@@ -38,3 +38,36 @@ make install
 ### cmake选项
 
 * BUILD_EXAMPLE_CS=ON 需要安装c#编译器
+
+## 使用
+### 使用默认有效期
+```C
+#include "tls_signature.h"
+#include <string>
+#include <iostream>
+
+std::string sig;
+int ret = gen_sig(140000000, "xiaojun", priKeyContent, sig);
+if (0 != ret) {
+	std::cout << "genSig failed " << ret << std::endl;
+} else {
+	std::cout << "genSig " << sig << std::endl;
+}
+
+```
+
+### 指定有效期
+```C
+tls_gen_signature_ex2_with_expire
+```
+
+### 多线程支持
+因为目前默认使用了 openssl，在多线程程序初始化时调用
+```C
+thread_setup();
+```
+在程序结束时调用
+```C
+thread_cleanup();
+```
+
