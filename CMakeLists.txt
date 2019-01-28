@@ -37,9 +37,9 @@ add_definitions(-DFMT_HEADER_ONLY -DRAPIDJSON_HAS_STDSTRING=1 -DUSE_OPENSSL)
 
 option(BUILD_SHARED "build tlsignature shared library" OFF)
 if(BUILD_SHARED)
-    add_library(tlsignature SHARED src/tls_signature.cpp)
+    add_library(tlsignature SHARED src/tls_signature.cpp src/opensslthreadlock.cpp)
 else()
-    add_library(tlsignature src/tls_signature.cpp)
+    add_library(tlsignature src/tls_signature.cpp src/opensslthreadlock.cpp)
 endif()
 target_link_libraries(tlsignature
     -lz
