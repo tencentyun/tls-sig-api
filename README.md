@@ -1,16 +1,9 @@
 # TLSAPI
 
 ## 概述
+本项目为腾讯云云通信账号体系 tls sig api C++ 实现。
 
-example 各种形式接口的使用 demo。
-
-src 包含了编译各种形式接口的源文件（不包括 java）。
-
-java 包含了 java 语言的接口代码。其中tls_sigcheck.java是jni的接口
-
-依赖openssl、zlib，测试依赖gtest
-
-## 下载代码与依赖
+## 下载代码并同步依赖
 ```shell
 git clone https://github.com/tencentyun/tls-sig-api.git
 cd tls-sig-api
@@ -18,26 +11,30 @@ git submodule update --init --recursive
 ```
 
 ## 构建
+构建依赖于 CMake 工具，请予以安装。
 
-使用cmake构建
-
+### 类 Unix 系统
 ```shell
-mkdir build
-cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX={install_path}
-make install
+cmake CMakeLists.txt
+cmake --build .
 ```
 
-如果需要手动指定 openssl 路径，运行 cmake 命令时添加下列命令
+如果需要手动指定 openssl 路径，运行 `cmake CMakeLists.txt` 命令时添加下列命令
 ```shell
 -DOPENSSL_ROOT_DIR=your_openssl_root_dir
 ```
 
-构建完成后可在install_path中看到各种结果
+### Windows
+Windows 系统需要安装 VS。
 
-### cmake选项
-
-* BUILD_EXAMPLE_CS=ON 需要安装c#编译器
+```
+cd third/mbedtls
+cmake CMakeLists.txt
+cmake --build .
+cd ../..
+cmake CMakeLists.txt
+cmake --build .
+```
 
 ## 使用
 
@@ -63,7 +60,7 @@ tls_gen_signature_ex2_with_expire
 ```
 
 ### 多线程支持
-因为目前默认使用了 openssl，在多线程程序初始化时调用
+因为类 Unix 目前默认使用了 openssl，需要在多线程程序初始化时调用。Windows 版本忽略此问题。
 ```C
 thread_setup();
 ```

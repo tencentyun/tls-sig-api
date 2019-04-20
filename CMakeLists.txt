@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 project(tls_sig_api)
 
-set(CMAKE_BUILD_TYPE "Release")
-
 if(UNIX)
     find_package(ZLIB REQUIRED)
     find_package(OpenSSL REQUIRED)
@@ -32,7 +30,6 @@ if(MSVC)
     endforeach()
     
     add_subdirectory(third/zlib-1.2.11)
-    add_subdirectory(third/mbedtls)
 endif()
 
 add_definitions(-DFMT_HEADER_ONLY -DRAPIDJSON_HAS_STDSTRING=1)
@@ -92,10 +89,8 @@ if(MSVC)
 
     option(BUILD_SHARED "build tlsignature shared library" OFF)
     if(BUILD_SHARED)
-        #add_library(tlsignature SHARED src/tls_signature.cpp src/opensslthreadlock.cpp)
         add_library(tlsignature SHARED src/tls_signature.cpp)
     else()
-        #add_library(tlsignature src/tls_signature.cpp src/opensslthreadlock.cpp)
         add_library(tlsignature src/tls_signature.cpp)
     endif()
 
