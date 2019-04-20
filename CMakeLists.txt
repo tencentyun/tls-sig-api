@@ -95,7 +95,7 @@ if(MSVC)
     endif()
 
     target_link_libraries(tlsignature
-        third/zlib-1.2.11/Debug/zlibd
+        third/zlib-1.2.11/Debug/zlibstaticd
         third/mbedtls/library/Debug/mbedcrypto
         )
     
