@@ -4,3 +4,6 @@
 [submodule "third/rapidjson"]
 	path = third/rapidjson
 	url = https://github.com/Tencent/rapidjson.git
+[submodule "third/mbedtls"]
+	path = third/mbedtls
+	url = https://github.com/ARMmbed/mbedtls.git
