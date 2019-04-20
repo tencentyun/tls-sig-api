@@ -36,8 +36,6 @@ endif()
 
 add_definitions(-DFMT_HEADER_ONLY -DRAPIDJSON_HAS_STDSTRING=1)
 
-add_dependencies()
-
 if(UNIX)
     include_directories(
         third/rapidjson/include
