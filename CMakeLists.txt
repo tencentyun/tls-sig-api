@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 project(tls_sig_api)
 
+set(CMAKE_BUILD_TYPE "Release")
+
 if(UNIX)
     find_package(ZLIB REQUIRED)
     find_package(OpenSSL REQUIRED)
@@ -10,7 +12,9 @@ if(UNIX)
 endif()
 
 if(MSVC)
+
     option(BUILD_STATIC_VCRUNTIME "static link vc runtime" OFF)
+
     set(CompilerFlags
         CMAKE_CXX_FLAGS
         CMAKE_CXX_FLAGS_DEBUG
@@ -28,11 +32,11 @@ if(MSVC)
             string(REPLACE "/MT" "/MD" ${CompilerFlag} "${${CompilerFlag}}")
         endif()
     endforeach()
-    
-    add_subdirectory(third/zlib-1.2.11)
 endif()
 
 add_definitions(-DFMT_HEADER_ONLY -DRAPIDJSON_HAS_STDSTRING=1)
+
+add_dependencies()
 
 if(UNIX)
     include_directories(
@@ -93,31 +97,41 @@ if(MSVC)
     else()
         add_library(tlsignature src/tls_signature.cpp)
     endif()
+    
+    if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+        set(ZLIB_NAME "third/zlib-1.2.11/Release/zlibstatic")
+        set(MBEDTLS_NAME "third/mbedtls/library/Release/mbedcrypto")
+    endif()
+    if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
+        set(ZLIB_NAME "third/zlib-1.2.11/Release/zlibstatic")
+        set(MBEDTLS_NAME "third/mbedtls/library/Release/mbedcrypto")
+    endif()
+
 
     target_link_libraries(tlsignature
-        third/zlib-1.2.11/Debug/zlibstaticd
-        third/mbedtls/library/Debug/mbedcrypto
+        ${ZLIB_NAME}
+        ${MBEDTLS_NAME}
         )
     
     add_executable(tls_licence_tools src/tls_licence_tools.cpp)
     target_link_libraries(tls_licence_tools
         tlsignature
-        third/zlib-1.2.11/Debug/zlibstaticd
-        third/mbedtls/library/Debug/mbedcrypto
+        ${ZLIB_NAME}
+        ${MBEDTLS_NAME}
         )
     
     add_executable(signature src/signature.cpp)
     target_link_libraries(signature
         tlsignature
-        third/zlib-1.2.11/Debug/zlibstaticd
-        third/mbedtls/library/Debug/mbedcrypto
+        ${ZLIB_NAME}
+        ${MBEDTLS_NAME}
         )
 
     add_library(sigcheck SHARED src/sigcheck.cpp)
     target_link_libraries(sigcheck
         tlsignature
-        third/zlib-1.2.11/Debug/zlibstaticd
-        third/mbedtls/library/Debug/mbedcrypto
+        ${ZLIB_NAME}
+        ${MBEDTLS_NAME}
         )
 endif()
 

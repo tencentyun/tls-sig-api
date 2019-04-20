@@ -28,13 +28,10 @@ cmake --build .
 Windows 系统需要安装 VS。
 
 ```
-cd third/mbedtls
-cmake CMakeLists.txt
-cmake --build .
-cd ../..
-cmake CMakeLists.txt
-cmake --build .
+.\build.bat
 ```
+
+生成的 `tlsignature.lib.lib` 在 `Release` 目录下。第三方依赖库分别在 `third/zlib-1.2.11/Release` 和 `third/mbedtls/library/Release`。
 
 ## 使用
 
