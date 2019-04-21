@@ -31,7 +31,7 @@ Windows 系统需要安装 VS。
 .\build.bat
 ```
 
-生成的 `tlsignature.lib.lib` 在 `Release` 目录下。第三方依赖库分别在 `third/zlib-1.2.11/Release` 和 `third/mbedtls/library/Release`。
+生成的 `tlsignature.lib.lib` 在 `Release` 目录下，头文件路径为 `src/tls_signature.h`。第三方依赖库分别在 `third/zlib-1.2.11/Release/zlibstatic.lib` 和 `third/mbedtls/library/Release/mbedcrypto.lib`。
 
 ## 使用
 
@@ -57,7 +57,7 @@ tls_gen_signature_ex2_with_expire
 ```
 
 ### 多线程支持
-因为类 Unix 目前默认使用了 openssl，需要在多线程程序初始化时调用。Windows 版本忽略此问题。
+因为类 Unix 目前默认使用了 openssl，需要在多线程程序初始化时调用。windows 版本无此问题。
 ```C
 thread_setup();
 ```
