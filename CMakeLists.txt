@@ -1,13 +1,20 @@
 cmake_minimum_required(VERSION 2.8)
 project(tls_sig_api)
 
-find_package(ZLIB REQUIRED)
-find_package(OpenSSL REQUIRED)
+set(CMAKE_BUILD_TYPE "Release")
+
 if(UNIX)
+    find_package(ZLIB REQUIRED)
+    find_package(OpenSSL REQUIRED)
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+    # 类 unix 系统使用 openssl 进行加解密
+    add_definitions(-DUSE_OPENSSL)
 endif()
+
 if(MSVC)
+
     option(BUILD_STATIC_VCRUNTIME "static link vc runtime" OFF)
+
     set(CompilerFlags
         CMAKE_CXX_FLAGS
         CMAKE_CXX_FLAGS_DEBUG
@@ -16,7 +23,7 @@ if(MSVC)
         CMAKE_C_FLAGS_DEBUG
         CMAKE_C_FLAGS_RELEASE
         )
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING /D_CRT_SECURE_NO_WARNINGS")
     add_definitions(/wd"4819")
     foreach(CompilerFlag ${CompilerFlags})
         if (BUILD_STATIC_VCRUNTIME)
@@ -27,30 +34,104 @@ if(MSVC)
     endforeach()
 endif()
 
-include_directories(
-    third/rapidjson/include
-    third/fmt
-    ${ZLIB_INCLUDE_DIRS}
-    ${OPENSSL_INCLUDE_DIR}
-    )
-add_definitions(-DFMT_HEADER_ONLY -DRAPIDJSON_HAS_STDSTRING=1 -DUSE_OPENSSL)
+add_definitions(-DFMT_HEADER_ONLY -DRAPIDJSON_HAS_STDSTRING=1)
 
-option(BUILD_SHARED "build tlsignature shared library" OFF)
-if(BUILD_SHARED)
-    add_library(tlsignature SHARED src/tls_signature.cpp src/opensslthreadlock.cpp)
-else()
-    add_library(tlsignature src/tls_signature.cpp src/opensslthreadlock.cpp)
+if(UNIX)
+    include_directories(
+        third/rapidjson/include
+        third/fmt
+        ${ZLIB_INCLUDE_DIRS}
+        ${OPENSSL_INCLUDE_DIR}
+        src
+        )
+
+    option(BUILD_SHARED "build tlsignature shared library" OFF)
+    if(BUILD_SHARED)
+        add_library(tlsignature SHARED src/tls_signature.cpp src/opensslthreadlock.cpp)
+    else()
+        add_library(tlsignature src/tls_signature.cpp src/opensslthreadlock.cpp)
+    endif()
+
+    target_link_libraries(tlsignature
+        -lz
+        ${OPENSSL_CRYPTO_LIBRARIES}
+        )
+    
+    add_executable(tls_licence_tools src/tls_licence_tools.cpp)
+    target_link_libraries(tls_licence_tools
+        tlsignature
+        -lz
+        ${OPENSSL_CRYPTO_LIBRARIES}
+        )
+    
+    add_executable(signature src/signature.cpp)
+    target_link_libraries(signature
+        tlsignature
+        -lz
+        ${OPENSSL_CRYPTO_LIBRARIES}
+        )
+
+    add_library(sigcheck SHARED src/sigcheck.cpp)
+    target_link_libraries(sigcheck
+        tlsignature
+        -lz
+        ${OPENSSL_CRYPTO_LIBRARIES}
+        )
 endif()
-target_link_libraries(tlsignature
-    -lz
-    ${OPENSSL_CRYPTO_LIBRARIES}
-)
 
-add_executable(signature src/signature.cpp)
-target_link_libraries(signature tlsignature)
+if(MSVC)
+    include_directories(
+        third/rapidjson/include
+        third/fmt
+        third/mbedtls/include
+        # Windows 上 zlib include 路径需要手动指定
+        third/zlib-1.2.11
+        src
+        )
 
-add_library(sigcheck SHARED src/sigcheck.cpp)
-target_link_libraries(sigcheck tlsignature)
+    option(BUILD_SHARED "build tlsignature shared library" OFF)
+    if(BUILD_SHARED)
+        add_library(tlsignature SHARED src/tls_signature.cpp)
+    else()
+        add_library(tlsignature src/tls_signature.cpp)
+    endif()
+    
+    if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+        set(ZLIB_NAME "third/zlib-1.2.11/Release/zlibstatic")
+        set(MBEDTLS_NAME "third/mbedtls/library/Release/mbedcrypto")
+    endif()
+    if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
+        set(ZLIB_NAME "third/zlib-1.2.11/Release/zlibstatic")
+        set(MBEDTLS_NAME "third/mbedtls/library/Release/mbedcrypto")
+    endif()
+
+
+    target_link_libraries(tlsignature
+        ${ZLIB_NAME}
+        ${MBEDTLS_NAME}
+        )
+    
+    add_executable(tls_licence_tools src/tls_licence_tools.cpp)
+    target_link_libraries(tls_licence_tools
+        tlsignature
+        ${ZLIB_NAME}
+        ${MBEDTLS_NAME}
+        )
+    
+    add_executable(signature src/signature.cpp)
+    target_link_libraries(signature
+        tlsignature
+        ${ZLIB_NAME}
+        ${MBEDTLS_NAME}
+        )
+
+    add_library(sigcheck SHARED src/sigcheck.cpp)
+    target_link_libraries(sigcheck
+        tlsignature
+        ${ZLIB_NAME}
+        ${MBEDTLS_NAME}
+        )
+endif()
 
 option(BUILD_JNI "build jni dynamic library" OFF)
 if(BUILD_JNI)
@@ -72,10 +153,10 @@ if(BUILD_JAVA)
 	add_jar(tls_sigcheck java/com/tls/sigcheck/tls_sigcheck.java)
 endif()
 
-option(BUILD_EXAMPLE "build example" ON)
-if(BUILD_EXAMPLE)
-	add_subdirectory(example)
-endif()
+# option(BUILD_EXAMPLE "build example" OFF)
+# if(BUILD_EXAMPLE)
+	# add_subdirectory(example)
+# endif()
 
 option(BUILD_TEST "build testcase" OFF)
 if(BUILD_TEST)
@@ -88,7 +169,6 @@ if(BUILD_TEST)
     OpenSSL::Crypto)
     add_test(unit_tests unit_tests)
 endif()
-
 
 install(TARGETS tlsignature
 	PERMISSIONS WORLD_READ OWNER_READ OWNER_WRITE GROUP_READ GROUP_WRITE
