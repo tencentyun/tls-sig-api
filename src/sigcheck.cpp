@@ -1,4 +1,7 @@
 #include "sigcheck.h"
+#if defined(WIN32) || defined(WIN64)
+#pragma warning(disable: 4267)
+#endif
 
 #include <cstring>
 

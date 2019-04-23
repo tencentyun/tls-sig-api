@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 project(tls_sig_api)
 
-set(CMAKE_BUILD_TYPE "Release")
-
 if(UNIX)
     find_package(ZLIB REQUIRED)
     find_package(OpenSSL REQUIRED)
@@ -97,14 +95,13 @@ if(MSVC)
     endif()
     
     if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-        set(ZLIB_NAME "third/zlib-1.2.11/Release/zlibstatic")
-        set(MBEDTLS_NAME "third/mbedtls/library/Release/mbedcrypto")
+        set(ZLIB_NAME "third/zlib-1.2.11/Debug/zlibstaticd")
+        set(MBEDTLS_NAME "third/mbedtls/library/Debug/mbedcrypto")
     endif()
     if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
         set(ZLIB_NAME "third/zlib-1.2.11/Release/zlibstatic")
         set(MBEDTLS_NAME "third/mbedtls/library/Release/mbedcrypto")
     endif()
-
 
     target_link_libraries(tlsignature
         ${ZLIB_NAME}
@@ -125,8 +122,8 @@ if(MSVC)
         ${MBEDTLS_NAME}
         )
 
-    add_library(sigcheck SHARED src/sigcheck.cpp)
-    target_link_libraries(sigcheck
+    add_library(tlsignaturecs SHARED src/sigcheck.cpp)
+    target_link_libraries(tlsignaturecs
         tlsignature
         ${ZLIB_NAME}
         ${MBEDTLS_NAME}
@@ -173,7 +170,7 @@ endif()
 install(TARGETS tlsignature
 	PERMISSIONS WORLD_READ OWNER_READ OWNER_WRITE GROUP_READ GROUP_WRITE
 	DESTINATION lib)
-install(TARGETS sigcheck
+install(TARGETS tlsignaturecs
 	PERMISSIONS WORLD_READ WORLD_EXECUTE OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_WRITE GROUP_EXECUTE
 	DESTINATION lib)
 install(TARGETS signature tlsignature
