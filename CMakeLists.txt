@@ -69,8 +69,8 @@ if(UNIX)
         ${OPENSSL_CRYPTO_LIBRARIES}
         )
 
-    add_library(sigcheck SHARED src/sigcheck.cpp)
-    target_link_libraries(sigcheck
+    add_library(tlsignaturecs SHARED src/sigcheck.cpp)
+    target_link_libraries(tlsignaturecs
         tlsignature
         -lz
         ${OPENSSL_CRYPTO_LIBRARIES}
@@ -169,9 +169,6 @@ endif()
 
 install(TARGETS tlsignature
 	PERMISSIONS WORLD_READ OWNER_READ OWNER_WRITE GROUP_READ GROUP_WRITE
-	DESTINATION lib)
-install(TARGETS tlsignaturecs
-	PERMISSIONS WORLD_READ WORLD_EXECUTE OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_WRITE GROUP_EXECUTE
 	DESTINATION lib)
 install(TARGETS signature tlsignature
 	PERMISSIONS WORLD_READ WORLD_EXECUTE OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_WRITE GROUP_EXECUTE
