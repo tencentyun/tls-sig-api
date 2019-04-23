@@ -100,6 +100,36 @@ int tls_gen_sig_ex(
 );
 
 /**
+ * 生成 sig 的接口
+ *
+ * @param sdkappid 创建应用时页面上分配的 sdkappid
+ * @param identifier 用户标识符，也就是用户 id，独立模式下，可以由开发者随意定义
+ * @param expire 有效期，单位秒
+ * @param sig 存放 sig 的缓冲区
+ * @param sig_buff_len 缓冲区的长度
+ * @param pri_key 私钥内容，注意不是私钥文件的路径
+ * @param pri_key_len 私钥内容长度
+ * @param err_msg 出错信息，如果错误，这里有出错信息
+ * @param err_msg_buff_len 出息信息缓冲区长度
+ * 
+ * @return 0 为成功，非 0 失败，出错信息在 err_msg 中
+ */
+#if defined(WIN32) || defined(WIN64)
+__declspec(dllexport)
+#endif
+int tls_gen_sig_ex_with_expire(
+	unsigned int sdkappid,
+	const char * identifier,
+    unsigned int expire,
+	char * sig,
+	unsigned int sig_buff_len,
+	const char * pri_key,
+	unsigned int pri_key_len,
+	char * err_msg,
+	unsigned int err_msg_buff_len
+);
+
+/**
  * 验证 sig 接口
  *
  * @param sig sig 的内容，以空字符结尾

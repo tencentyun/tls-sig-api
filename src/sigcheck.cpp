@@ -96,8 +96,8 @@ int tls_vri_sig(
 int tls_gen_sig_ex_with_expire(
 	unsigned int sdkappid,
 	const char * identifier,
-	char * sig,
     unsigned int expire,
+	char * sig,
 	unsigned int sig_buff_len,
 	const char * pri_key,
 	unsigned int pri_key_len,
