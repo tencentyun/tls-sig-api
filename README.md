@@ -11,7 +11,7 @@ git submodule update --init --recursive
 ```
 
 ## 构建
-构建依赖于 CMake 工具，请予以安装。
+构建依赖于 CMake 工具，请确保已经安装。
 
 ### 类 Unix 系统
 ```shell
@@ -25,13 +25,20 @@ cmake --build .
 ```
 
 ### Windows
-Windows 系统需要安装 VS。
+Windows 平台构建依赖 Visual Studio，请确保已经安装。
 
 ```
 .\build.bat
 ```
 
-生成的 `tlsignature.lib.lib` 在 `Release` 目录下，头文件路径为 `src/tls_signature.h`。第三方依赖库分别在 `third/zlib-1.2.11/Release/zlibstatic.lib` 和 `third/mbedtls/library/Release/mbedcrypto.lib`。
+若需要生成 64 位版本，请将 `build.bat` 中 `ARCH` 变量设置为
+```
+set ARCH=x64
+```
+
+用于 C++ 调用的静态库为 `Release/tlsignature.lib`，头文件路径为 `src/tls_signature.h`。第三方依赖库分别在 `third/zlib-1.2.11/Release/zlibstatic.lib` 和 `third/mbedtls/library/Release/mbedcrypto.lib`。
+
+用 C# 调用的扩展动态库为 `Release/tlsignaturecs.dll`。
 
 ## 使用
 
