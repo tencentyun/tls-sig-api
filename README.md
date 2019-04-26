@@ -11,7 +11,7 @@ git submodule update --init --recursive
 ```
 
 ## 构建
-构建依赖于 CMake 工具，请确保已经安装。
+构建依赖于 `CMake` 、 `make` 以及 `gcc`，请确保已经安装。
 
 ### 类 Unix 系统
 ```shell
@@ -21,11 +21,28 @@ cmake --build .
 
 如果需要手动指定 openssl 路径，运行 `cmake CMakeLists.txt` 命令时添加下列命令
 ```shell
--DOPENSSL_ROOT_DIR=your_openssl_root_dir
+cmake  -DOPENSSL_ROOT_DIR=your_openssl_root_dir CMakeLists.txt
+cmake --build .
+```
+
+头文件路径如下
+```
+src/tls_signature.h
+```
+
+库文件路径如下
+```
+
+./libtlsignature.a
+```
+
+用户构建项目时除了链接 `libtlsignature.a`，还需引入 `zlib` 和 `openssl` 加密算法库，
+```
+-lz -lcrypto
 ```
 
 ### Windows
-Windows 平台构建依赖 Visual Studio，请确保已经安装。
+Windows 平台构建依赖 `CMake` 和 `Visual Studio`，请确保已经安装。
 
 ```
 .\build.bat
@@ -36,9 +53,20 @@ Windows 平台构建依赖 Visual Studio，请确保已经安装。
 set ARCH=x64
 ```
 
-用于 C++ 调用的静态库为 `Release/tlsignature.lib`，头文件路径为 `src/tls_signature.h`。第三方依赖库分别在 `third/zlib-1.2.11/Release/zlibstatic.lib` 和 `third/mbedtls/library/Release/mbedcrypto.lib`。
+头文件路径如下
 
-用 C# 调用的扩展动态库为 `Release/tlsignaturecs.dll`。
+```
+src/tls_signature.h
+```
+
+库文件路径如下
+```
+Release/tlsignature.lib
+third/zlib-1.2.11/Release/zlibstatic.lib
+third/mbedtls/library/Release/mbedcrypto.lib
+```
+
+用户构建项目时只需要引用上述头文件和库文件。
 
 ## 使用
 
