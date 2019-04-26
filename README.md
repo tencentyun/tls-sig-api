@@ -36,7 +36,7 @@ src/tls_signature.h
 ./libtlsignature.a
 ```
 
-用户构建项目时除了链接 `libtlsignature.a`，还需引入 `zlib` 和 `openssl` 加密算法库，
+用户构建项目时除了链接 `libtlsignature.a`，还需引入 `zlib` 和 `openssl` 加密算法库，类 Unix 系统一般都会自带，只需要在链接指令中添加下面的指令
 ```
 -lz -lcrypto
 ```
