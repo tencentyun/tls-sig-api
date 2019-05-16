@@ -10,6 +10,8 @@ cd tls-sig-api
 git submodule update --init --recursive
 ```
 
+如果上面同步代码的操作出现问题，可以到[这里](https://github.com/tencentyun/tls-sig-api/releases)下载源代码。
+
 ## 构建
 构建依赖于 `CMake` 、 `make` 以及 `gcc`，请确保已经安装。
 
