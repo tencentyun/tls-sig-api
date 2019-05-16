@@ -57,7 +57,7 @@ Windows 平台构建依赖 `CMake` 和 `Visual Studio`，请确保已经安装�
 src/tls_signature.h
 ```
 
-库文件路径，分 Win32 和 x64，而且 Debug 和 Release 用予以区分
+库文件路径，分 Win32 和 x64，而且 Debug 和 Release 也通过目录予以区分
 ```
 tls-sig-api_xx/xxxx/tlsignature.lib
 tls-sig-api_xx/xxxx/zlibstatic.lib
