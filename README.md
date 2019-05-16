@@ -48,25 +48,21 @@ Windows 平台构建依赖 `CMake` 和 `Visual Studio`，请确保已经安装�
 .\build.bat
 ```
 
-若需要生成 64 位版本，请将 `build.bat` 中 `ARCH` 变量设置为
-```
-set ARCH=x64
-```
-
 头文件路径如下
 
 ```
 src/tls_signature.h
 ```
 
-库文件路径如下
+库文件路径，分 Win32 和 x64，而且 Debug 和 Release 用予以区分
 ```
-Release/tlsignature.lib
-third/zlib-1.2.11/Release/zlibstatic.lib
-third/mbedtls/library/Release/mbedcrypto.lib
+tls-sig-api_xx/xxxx/tlsignature.lib
+tls-sig-api_xx/xxxx/zlibstatic.lib
+tls-sig-api_xx/xxxx/mbedcrypto.lib
 ```
+另外 Debug 版本的 zlib 名称为 zlibstaticd.lib
 
-用户构建项目时只需要引用上述头文件和库文件。
+用户构建项目时只需要引用头文件 `src/tls_signature.h` 和上述三个库文件。
 
 ## 使用
 
