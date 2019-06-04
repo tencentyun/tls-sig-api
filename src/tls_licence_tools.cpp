@@ -26,6 +26,12 @@ static void usage(const string& prog)
 	cout << "\tgen sig e.g.: " << prog << " gen ec_key.pem sig 1400001052 xiaojun" << endl;
 	cout << "\tgen sig: " << prog << " genexpire pri_key_file sig_file sdkappid identifier expiredtime" << endl;
 	cout << "\tgen sig e.g.: " << prog << " genexpire ec_key.pem sig 1400001052 xiaojun 31536000" << endl;
+
+	cout << "\tgen2 sig: " << prog << " gen2 key sig_file sdkappid identifier" << endl;
+	cout << "\tgen2 sig: " << prog << " gen2 5bd2850fff3ecb11d7c805251c51ee463a25727bddc2385f3fa8bfee1bb93b5e sig 1400001052 xiaojun" << endl;
+	cout << "\tverify2 sig: " << prog << " verify2 key sig_file sdkappid identifier" << endl;
+	cout << "\tverify2 sig e.g.: " << prog << " verify2 5bd2850fff3ecb11d7c805251c51ee463a25727bddc2385f3fa8bfee1bb93b5e sig 1400001052 xiaojun" << endl;
+
 	cout << "\tverify sig: " << prog << " verify pub_key_file sig_file sdkappid identifier" << endl;
 	cout << "\tverify sig e.g.: " << prog << " verify public.pem sig 1400001052 xiaojun" << endl;
 	cout << "\tgen sig: " << prog << " genuser pri_key_file sig_file sdkappid identifier expire userbuf" << endl;
@@ -169,8 +175,46 @@ static int gen_sig(const string& pri_key_file, const string& sig_file, uint32_t 
 	return 0;
 }
 
+static int gen2_sig(const string& key, const string& sig_file,
+		uint32_t sdkappid, const string& identifier)
+{
+	string sig;
+	string err_msg;
+	int ret = gen_sig_v2(sdkappid, identifier, key, 180*86400, sig, err_msg);
+	if (0 != ret) {
+		cout << "error msg: " << err_msg << " return " << ret << endl;
+		return -3;
+	}
+
+#if defined(WIN32) || defined(WIN64)
+	FILE * sig_fp = NULL;
+	fopen_s(&sig_fp, sig_file.c_str(), "w+");
+#else
+	FILE* sig_fp = fopen(sig_file.c_str(),"w+");
+#endif
+	if (!sig_fp)
+	{
+		cout << "open file " << sig_file << "failed" << endl;
+		return -4;
+	}
+
+	// 将签名写入文件
+	int written_cnt = (int)fwrite(sig.c_str(), sizeof(char), sig.size(), sig_fp);
+	if (sig.size() > (unsigned int)written_cnt && 0 != ferror(sig_fp))
+	{
+		std::cout << "write sig content failed" << std::endl;
+		return -5;
+	}
+
+	std::cout << sig << std::endl;
+	std::cout << "generate sig ok" << std::endl;
+
+	return 0;
+}
+
 // 校验签名
-static int verify_sig(string& pub_key_file, string& sig_file, string& sdkappid, string& identifier, bool with_userbuf = false)
+static int verify_sig(string& pub_key_file, string& sig_file,
+		string& sdkappid, string& identifier, bool with_userbuf = false)
 {
 	// 首先读取 sig 文件中的内容
 	// 我们的程序虽然是用的是这种方式，但是开发者在使用的时候肯定是用缓冲区直接调用接口
@@ -257,6 +301,58 @@ static int verify_sig(string& pub_key_file, string& sig_file, string& sdkappid, 
 	return 0;
 }
 
+static int verify2_sig(const string& key, string& sig_file,
+		string& sdkappid, string& identifier)
+{
+	// 首先读取 sig 文件中的内容
+	// 我们的程序虽然是用的是这种方式，但是开发者在使用的时候肯定是用缓冲区直接调用接口
+	// 这里这里这么做只是为了我们使用上的方便，我们可以把 sig 的内容写入文件，然后检查正确性
+	// 而免去命令行上输入的不确定性
+	char sig_buf[1024];
+#if defined(WIN32) || defined(WIN64)
+	FILE * sig_fp = NULL;
+	fopen_s(&sig_fp, sig_file.c_str(), "r");
+#else
+	FILE* sig_fp = fopen(sig_file.c_str(), "r");
+#endif
+	if (!sig_fp) {
+		cout << "open file " << sig_file << " failed" << endl;
+		return -1;
+	}
+
+	int read_cnt = (int)fread(sig_buf, sizeof(char), sizeof(sig_buf), sig_fp);
+	if (sizeof(sig_buf) > (unsigned int)read_cnt && 0 != ferror(sig_fp)) {
+		cout << "read file " << sig_file << " failed" << endl;
+		return -2;
+	}
+	fclose(sig_fp);
+	sig_fp = NULL;
+	string sig_str(sig_buf, read_cnt);
+
+	SigInfo sig_info;
+
+	sig_info.strAppid = sdkappid;
+	sig_info.strIdentify = identifier;
+	string err_msg;
+	stringstream ss;
+	ss.str(sdkappid);
+	uint32_t int_sdkappid;
+	ss >> int_sdkappid;
+	uint32_t expire_time;
+	uint32_t init_time;
+	int ret = tls_check_signature_ex2(sig_str, key, int_sdkappid,
+			identifier, expire_time, init_time, err_msg);
+	if (0 != ret)
+	{
+		cout << "check sig faild: " << ret << ":" << err_msg << endl;
+		return -5;
+	}
+	cout << "verify sig ok" << endl;
+	cout << "expire " << expire_time << " init time " << init_time << endl;
+	return 0;
+}
+
+
 int main(int argc, char * argv[])
 {
     if (argc < 2)
@@ -336,6 +432,20 @@ int main(int argc, char * argv[])
             cout << "cmd " << cmd << " return " << ret  << " " << errmsg << endl;
         }
         return 0;
+    }
+    else if (0 == strcmp(cmd, "gen2") && 6 == argc) {
+    	std::string key = argv[2];
+    	std::string sig_file = argv[3];
+    	std::string sdkappid_str = argv[4];
+    	std::string identifier = argv[5];
+    	gen2_sig(key, sig_file, strtol(sdkappid_str.c_str(), NULL, 10), identifier);
+    }
+    else if (0 == strcmp(cmd, "verify2") && 6 == argc) {
+		std::string key = argv[2];
+		std::string sig_file = argv[3];
+		std::string sdkappid_str = argv[4];
+		std::string identifier = argv[5];
+		verify2_sig(key, sig_file, sdkappid_str, identifier);
     }
     else
     {

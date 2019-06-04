@@ -6,6 +6,9 @@
 #include <cstdio>
 #include <ctime>
 #include <cstring>
+#include <iostream>
+#include <iomanip>
+#include <sstream>
 
 #ifdef USE_OPENSSL
 #include "openssl/evp.h"
@@ -19,10 +22,8 @@
 #include "mbedtls/entropy.h"
 #include "mbedtls/base64.h"
 #endif
-#include "zlib.h"
 
-#include <iomanip>
-#include <sstream>
+#include "zlib.h"
 
 #define fmt tls_signature_fmt
 #define FMT_NO_FMT_STRING_ALIAS
@@ -58,7 +59,7 @@
 
 using namespace std;
 
-static int verify_sig_v20(
+static int verify_sig_v2(
         const rapidjson::Document& sig,
         uint32_t sdkappid,
         const std::string& identifier,
@@ -66,7 +67,8 @@ static int verify_sig_v20(
         uint32_t& initTime,
         uint32_t& expireTime,
         std::string& errMsg);
-static std::string hmacsha256(uint32_t sdkappid, const std::string& identifier, uint64_t initTime, int expire, const std::string& key);
+static std::string hmacsha256(uint32_t sdkappid, const std::string& identifier,
+        uint64_t initTime, uint64_t expire, const std::string& key);
 
 namespace tls_signature_inner{
 
@@ -239,6 +241,7 @@ static int JsonToSig(const rapidjson::Document &json, std::string &sig, std::str
     return 0;
 }
 
+
 TLS_API int SigToJson(const std::string &sig, std::string &json, std::string &errmsg) {
     std::string compressed;
     int ret = base64_decode_url(sig.data(), sig.size(), compressed);
@@ -252,6 +255,8 @@ TLS_API int SigToJson(const std::string &sig, std::string &json, std::string &er
         errmsg = fmt::sprintf("uncompress failed %d", ret);
         return CHECK_ERR3;
     }
+
+    std::cout << json << std::endl;
     return 0;
 }
 
@@ -614,7 +619,7 @@ TLS_API int tls_check_signature_ex(
 
         std::string version = get_sig_version(json);
         if ("2.0" == version) {
-            return verify_sig_v20(json, strtol(stSigInfo.strAppid.c_str(), NULL, 10), stSigInfo.strIdentify, pPubKey, dwExpireTime, dwInitTime, strErrMsg);
+            return verify_sig_v2(json, strtol(stSigInfo.strAppid.c_str(), NULL, 10), stSigInfo.strIdentify, pPubKey, dwInitTime, dwExpireTime, strErrMsg);
         }
 		ret = tls_check_signature_inner(json,std::string(pPubKey,uPubKeyLen), strErrMsg);
         if (ret != 0) return ret;
@@ -810,7 +815,7 @@ TLS_API int gen_sig(uint32_t sdkappid, const std::string& identifier, const std:
  * @param errMsg 错误信息
  * @return 0 为成功，非 0 为失败
  */
-TLS_API int gen_sig_v20(uint32_t sdkappid, const std::string& identifier,
+TLS_API int gen_sig_v2(uint32_t sdkappid, const std::string& identifier,
         const std::string& key, int expire, std::string& sig, std::string& errMsg) {
 
     uint64_t currTime = time(NULL);
@@ -826,13 +831,14 @@ TLS_API int gen_sig_v20(uint32_t sdkappid, const std::string& identifier,
     return JsonToSig(sigDoc, sig, errMsg);
 }
 
-static std::string hmacsha256(uint32_t sdkappid, const std::string& identifier, uint64_t initTime, int expire, const std::string& key)
+static std::string hmacsha256(uint32_t sdkappid, const std::string& identifier,
+        uint64_t initTime, uint64_t expire, const std::string& key)
 {
 #ifdef USE_OPENSSL
     std::string rawContentToBeSigned = "TLS.identifier:" + identifier + "\n"
-                                  + "TLS.sdkappid:" + std::to_string(static_cast<long long>(sdkappid)) + "\n"
-                                  + "TLS.time:" + std::to_string(static_cast<long long>(initTime)) + "\n"
-                                  + "TLS.expire:" + std::to_string(static_cast<long long>(expire)) + "\n";
+        + "TLS.sdkappid:" + std::to_string(static_cast<long long>(sdkappid)) + "\n"
+        + "TLS.time:" + std::to_string(static_cast<long long>(initTime)) + "\n"
+        + "TLS.expire:" + std::to_string(static_cast<long long>(expire)) + "\n";
     unsigned char result[SHA256_DIGEST_LENGTH];
     unsigned resultLen = sizeof(result);
     std::string base64Result;
@@ -865,7 +871,7 @@ static std::string hmacsha256(uint32_t sdkappid, const std::string& identifier, 
  * @param errMsg
  * @return
  */
-static int verify_sig_v20(
+static int verify_sig_v2(
         const rapidjson::Document& sig,
         uint32_t sdkappid,
         const std::string& identifier,
@@ -875,7 +881,7 @@ static int verify_sig_v20(
         std::string& errMsg) {
 
     // 先校验字段
-    if (!sig.HasMember("TLS.identifier")) {
+    if (!sig.HasMember("TLS.identifier") || !sig["TLS.identifier"].IsString()) {
         errMsg = "identifier field is missing";
         return CHECK_ERR7;
     }
@@ -885,7 +891,7 @@ static int verify_sig_v20(
         return CHECK_ERR13;
     }
 
-    if (!sig.HasMember("TLS.sdkappid")) {
+    if (!sig.HasMember("TLS.sdkappid") || !sig["TLS.sdkappid"].IsUint()) {
         errMsg = "sdkappid field is missing";
         return CHECK_ERR7;
     }
@@ -901,30 +907,28 @@ static int verify_sig_v20(
     }
     initTime = sig["TLS.time"].GetInt();
 
-    if (!sig.HasMember("TLS.expire")) {
+    if (!sig.HasMember("TLS.expire") || !sig["TLS.expire"].IsUint()) {
         errMsg = "expire field is missing";
         return CHECK_ERR7;
     }
-    int expire = sig["TLS.expire"].GetInt();
+    expireTime = sig["TLS.expire"].GetUint();
 
     uint64_t currTime = time(NULL);
-    if (currTime > static_cast<uint64_t>(initTime)+ static_cast<uint64_t>(expire)) {
+    if (currTime > static_cast<uint64_t>(initTime)+ static_cast<uint64_t>(expireTime)) {
         errMsg = "sig expired";
         return CHECK_ERR9;
     }
 
-    if (!sig.HasMember("TLS.sig")) {
+    if (!sig.HasMember("TLS.sig") || !sig["TLS.sig"].IsString()) {
         errMsg = "sig field is missing";
         return CHECK_ERR7;
     }
     std::string sigInReq = sig["TLS.sig"].GetString();
-    std::string sigCalculated = hmacsha256(sdkappid, identifier, initTime, expire, key);
+    std::string sigCalculated = hmacsha256(sdkappid, identifier, initTime, expireTime, key);
     if (sigInReq != sigCalculated) {
         errMsg = "sig error";
         return CHECK_ERR8;
     }
-
-    expireTime = initTime+expire;
 
     return 0;
 }

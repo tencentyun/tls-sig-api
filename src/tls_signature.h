@@ -240,6 +240,18 @@ TLS_API int tls_check_userbuf_ticket(
 
 TLS_API int gen_sig(uint32_t sdkappid, const std::string& identifier, const std::string& priKey, std::string& sig);
 
+/**
+ * 生成签名函数 v2 版本
+ * @param sdkappid 应用ID
+ * @param identifier 用户账号，utf-8 编码
+ * @param key 密钥
+ * @param expire 有效期，单位秒
+ * @param errMsg 错误信息
+ * @return 0 为成功，非 0 为失败
+ */
+TLS_API int gen_sig_v2(uint32_t sdkappid, const std::string& identifier,
+		const std::string& key, int expire, std::string& sig, std::string& errMsg);
+
 int thread_setup();
 void thread_cleanup();
 
