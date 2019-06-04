@@ -3,8 +3,8 @@
 #pragma warning(disable: 4099)
 #endif
 
-// ´ËÎÄ¼şÑİÊ¾ÁËÎÄ¼şÁ½¸ö½Ó¿ÚµÄÊ¹ÓÃ·½·¨
-// Ê×ÏÈÊÇÉú³ÉÇ©Ãû½Ó¿ÚµÄ·½·¨£¬È»ºóµÄĞ£ÑéÇ©Ãû½Ó¿ÚµÄ·½·¨
+// æ­¤æ–‡ä»¶æ¼”ç¤ºäº†æ–‡ä»¶ä¸¤ä¸ªæ¥å£çš„ä½¿ç”¨æ–¹æ³•
+// é¦–å…ˆæ˜¯ç”Ÿæˆç­¾åæ¥å£çš„æ–¹æ³•ï¼Œç„¶åçš„æ ¡éªŒç­¾åæ¥å£çš„æ–¹æ³•
 
 #include <stdlib.h>
 #include <string>
@@ -35,7 +35,7 @@ static void usage(const string& prog)
 	cout << "\tdump sig e.g.: " << prog << " dump sigtext" << endl;
 }
 
-// Ä¬ÈÏ 180 ÓĞĞ§ÆÚ
+// é»˜è®¤ 180 æœ‰æ•ˆæœŸ
 static int gen_sig_without_expire(const string& pri_key_file, const string& sig_file, uint32_t sdkappid, const string& identifier)
 {
 #if defined(WIN32) || defined(WIN64)
@@ -50,7 +50,7 @@ static int gen_sig_without_expire(const string& pri_key_file, const string& sig_
 		return -1;
 	}
 
-	// ¶ÁÈ¡Ë½Ô¿ÎÄ¼şÄÚÈİ
+	// è¯»å–ç§é’¥æ–‡ä»¶å†…å®¹
 	char pri_key_buf[1024] = {0};
 	int read_cnt = (int)fread(pri_key_buf, sizeof(char), sizeof(pri_key_buf), pri_key_fp);
 	if (sizeof(pri_key_buf) > (unsigned int)read_cnt && 0 != ferror(pri_key_fp))
@@ -61,7 +61,7 @@ static int gen_sig_without_expire(const string& pri_key_file, const string& sig_
 	fclose(pri_key_fp);
 	pri_key_fp = NULL;
 
-	// Í¨¹ıË½Ô¿ÎÄ¼şÄÚÈİ¼ÓÃÜ´«Èë²ÎÊıÉú³É sig
+	// é€šè¿‡ç§é’¥æ–‡ä»¶å†…å®¹åŠ å¯†ä¼ å…¥å‚æ•°ç”Ÿæˆ sig
 	string sig;
 	string err_msg;
     string str_pri_key(pri_key_buf, read_cnt);
@@ -84,7 +84,7 @@ static int gen_sig_without_expire(const string& pri_key_file, const string& sig_
 		return -4;
 	}
 
-	// ½«Ç©ÃûĞ´ÈëÎÄ¼ş
+	// å°†ç­¾åå†™å…¥æ–‡ä»¶
 	int written_cnt = (int)fwrite(sig.c_str(), sizeof(char), sig.size(), sig_fp);
 	if (sig.size() > (unsigned int)written_cnt && 0 != ferror(sig_fp))
 	{
@@ -97,7 +97,7 @@ static int gen_sig_without_expire(const string& pri_key_file, const string& sig_
 	return 0;
 }
 
-// Ö¸¶¨ÓĞĞ§ÆÚÉú³ÉÇ©Ãû
+// æŒ‡å®šæœ‰æ•ˆæœŸç”Ÿæˆç­¾å
 static int gen_sig(const string& pri_key_file, const string& sig_file, uint32_t sdkappid, const string& identifier, int *expire = NULL, std::string *userbuf = NULL)
 {
 #if defined(WIN32) || defined(WIN64)
@@ -112,7 +112,7 @@ static int gen_sig(const string& pri_key_file, const string& sig_file, uint32_t 
 		return -1;
 	}
 
-	// ¶ÁÈ¡Ë½Ô¿ÎÄ¼şÄÚÈİ
+	// è¯»å–ç§é’¥æ–‡ä»¶å†…å®¹
 	char pri_key_buf[1024] = {0};
 	int read_cnt = (int)fread(pri_key_buf, sizeof(char), sizeof(pri_key_buf), pri_key_fp);
 	if (sizeof(pri_key_buf) > (unsigned int)read_cnt && 0 != ferror(pri_key_fp))
@@ -123,7 +123,7 @@ static int gen_sig(const string& pri_key_file, const string& sig_file, uint32_t 
 	fclose(pri_key_fp);
 	pri_key_fp = NULL;
 
-	// Í¨¹ıË½Ô¿ÎÄ¼şÄÚÈİ¼ÓÃÜ´«Èë²ÎÊıÉú³É sig
+	// é€šè¿‡ç§é’¥æ–‡ä»¶å†…å®¹åŠ å¯†ä¼ å…¥å‚æ•°ç”Ÿæˆ sig
 	string sig;
 	string err_msg;
     string str_pri_key(pri_key_buf, read_cnt);
@@ -156,7 +156,7 @@ static int gen_sig(const string& pri_key_file, const string& sig_file, uint32_t 
 		return -4;
 	}
 
-	// ½«Ç©ÃûĞ´ÈëÎÄ¼ş
+	// å°†ç­¾åå†™å…¥æ–‡ä»¶
 	int written_cnt = (int)fwrite(sig.c_str(), sizeof(char), sig.size(), sig_fp);
 	if (sig.size() > (unsigned int)written_cnt && 0 != ferror(sig_fp))
 	{
@@ -169,13 +169,13 @@ static int gen_sig(const string& pri_key_file, const string& sig_file, uint32_t 
 	return 0;
 }
 
-// Ğ£ÑéÇ©Ãû
+// æ ¡éªŒç­¾å
 static int verify_sig(string& pub_key_file, string& sig_file, string& sdkappid, string& identifier, bool with_userbuf = false)
 {
-	// Ê×ÏÈ¶ÁÈ¡ sig ÎÄ¼şÖĞµÄÄÚÈİ
-	// ÎÒÃÇµÄ³ÌĞòËäÈ»ÊÇÓÃµÄÊÇÕâÖÖ·½Ê½£¬µ«ÊÇ¿ª·¢ÕßÔÚÊ¹ÓÃµÄÊ±ºò¿Ï¶¨ÊÇÓÃ»º³åÇøÖ±½Óµ÷ÓÃ½Ó¿Ú
-	// ÕâÀïÕâÀïÕâÃ´×öÖ»ÊÇÎªÁËÎÒÃÇÊ¹ÓÃÉÏµÄ·½±ã£¬ÎÒÃÇ¿ÉÒÔ°Ñ sig µÄÄÚÈİĞ´ÈëÎÄ¼ş£¬È»ºó¼ì²éÕıÈ·ĞÔ
-	// ¶øÃâÈ¥ÃüÁîĞĞÉÏÊäÈëµÄ²»È·¶¨ĞÔ
+	// é¦–å…ˆè¯»å– sig æ–‡ä»¶ä¸­çš„å†…å®¹
+	// æˆ‘ä»¬çš„ç¨‹åºè™½ç„¶æ˜¯ç”¨çš„æ˜¯è¿™ç§æ–¹å¼ï¼Œä½†æ˜¯å¼€å‘è€…åœ¨ä½¿ç”¨çš„æ—¶å€™è‚¯å®šæ˜¯ç”¨ç¼“å†²åŒºç›´æ¥è°ƒç”¨æ¥å£
+	// è¿™é‡Œè¿™é‡Œè¿™ä¹ˆåšåªæ˜¯ä¸ºäº†æˆ‘ä»¬ä½¿ç”¨ä¸Šçš„æ–¹ä¾¿ï¼Œæˆ‘ä»¬å¯ä»¥æŠŠ sig çš„å†…å®¹å†™å…¥æ–‡ä»¶ï¼Œç„¶åæ£€æŸ¥æ­£ç¡®æ€§
+	// è€Œå…å»å‘½ä»¤è¡Œä¸Šè¾“å…¥çš„ä¸ç¡®å®šæ€§
 	char sig_buf[1024];
 #if defined(WIN32) || defined(WIN64)
 	FILE * sig_fp = NULL;
@@ -199,7 +199,7 @@ static int verify_sig(string& pub_key_file, string& sig_file, string& sdkappid, 
 	sig_fp = NULL;
 	string sig_str(sig_buf, read_cnt); 
 
-	// ¶Á³ö¹«Ô¿µÄÄÚÈİ
+	// è¯»å‡ºå…¬é’¥çš„å†…å®¹
 #if defined(WIN32) || defined(WIN64)
 	FILE * pub_key_fp = NULL;
 	fopen_s(&pub_key_fp, pub_key_file.c_str(), "r");
@@ -227,7 +227,7 @@ static int verify_sig(string& pub_key_file, string& sig_file, string& sdkappid, 
 	sig_info.strAppid = sdkappid;
 	sig_info.strIdentify = identifier;
 	string err_msg;
-	// µ÷ÓÃ½Ó¿Ú¶Ô sig ½øĞĞÑéÖ¤
+	// è°ƒç”¨æ¥å£å¯¹ sig è¿›è¡ŒéªŒè¯
     string str_pub_key(pub_key_buf, read_cnt);
     stringstream ss;
     ss.str(sdkappid);
