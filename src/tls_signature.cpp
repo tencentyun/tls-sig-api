@@ -288,7 +288,7 @@ static int CheckJson(const rapidjson::Document& json, const std::string& req_ide
     if (!appid || !appid->IsString() ||
         strtoul(appid->GetString(), NULL, 10) != req_appid) {
         strErrMsg =
-            fmt::sprintf("identifier not match (%s)sig and (%u)req",
+            fmt::sprintf("sdk_appid not match (%s)sig and (%u)req",
                          Dump(appid).c_str(), req_appid);
         return CHECK_ERR14;
     }
