@@ -30,3 +30,12 @@
 *.exe
 *.out
 *.app
+
+cmake_install.cmake
+.idea
+CMakeFiles
+Debug
+ALL_BUILD.*
+CMakeCache.txt
+*.vcxproj
+*.vcxproj.filters
