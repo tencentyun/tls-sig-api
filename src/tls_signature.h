@@ -91,27 +91,24 @@ typedef struct
 } SigInfo;
 
 /**
- * @brief 验证 sig 是否合法
- *
- * @param strSig sig 的内容
- * @param pPubKey 公钥的内容，注意不是公钥文件的路径
- * @param uPubKeyLen 公钥内容的长度
- * @param stSigInfo sig 的基本信息，因为 sig 验证合法性的原理是使用公钥解密，验证其中字段与明文中的字段是否匹配
- * @param dwExpireTime 返回 sig 的有效期
- * @param dwInitTime 返回 sig 的生成时间
- * @param strErrMsg 如果出错，这里有错误信息
- *
- * @return 0 表示成功，非 0 表示失败，strErrMsg 中有失败信息
+ * @brief 校验签名，兼容目前所有版本。
+ * @param sig 签名内容
+ * @param key 密钥，如果是早期非对称版本，那么这里是公钥
+ * @param pubKeyLen 密钥内容长度
+ * @param sigInfo 需要校验的签名明文信息
+ * @param expireTime 传出参数，有效期，单位秒
+ * @param initTime 传出参数，签名生成的 unix 时间戳
+ * @param errMsg 传出参数，如果出错，这里有错误信息
+ * @return 0 为成功，非 0 为失败
  */
 TLS_API int tls_check_signature_ex(
-    const std::string& strSig,
-    const char* pPubKey,
-    uint32_t uPubKeyLen,
-    const SigInfo& stSigInfo,
-    uint32_t& dwExpireTime,
-    uint32_t& dwInitTime,
-    std::string& strErrMsg
-);
+    const std::string& sig,
+    const char* key,
+    uint32_t pubKeyLen,
+    const SigInfo& sigInfo,
+    uint32_t& expireTime,
+    uint32_t& initTime,
+    std::string& errMsg);
 
 /**
  * @brief 验证 sig 是否合法
@@ -241,7 +238,7 @@ TLS_API int tls_check_userbuf_ticket(
 TLS_API int gen_sig(uint32_t sdkappid, const std::string& identifier, const std::string& priKey, std::string& sig);
 
 /**
- * 生成签名函数 v2 版本
+ * @brief 生成签名函数 v2 版本
  * @param sdkappid 应用ID
  * @param identifier 用户账号，utf-8 编码
  * @param key 密钥
