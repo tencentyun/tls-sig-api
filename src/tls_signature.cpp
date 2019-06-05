@@ -256,7 +256,6 @@ TLS_API int SigToJson(const std::string &sig, std::string &json, std::string &er
         return CHECK_ERR3;
     }
 
-    std::cout << json << std::endl;
     return 0;
 }
 
