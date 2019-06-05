@@ -852,14 +852,15 @@ TLS_API int gen_sig_v2(uint32_t sdkappid, const std::string& identifier,
 static std::string hmacsha256(uint32_t sdkappid, const std::string& identifier,
         uint64_t initTime, uint64_t expire, const std::string& key)
 {
-#ifdef USE_OPENSSL
     std::string rawContentToBeSigned = "TLS.identifier:" + identifier + "\n"
         + "TLS.sdkappid:" + std::to_string(static_cast<long long>(sdkappid)) + "\n"
         + "TLS.time:" + std::to_string(static_cast<long long>(initTime)) + "\n"
         + "TLS.expire:" + std::to_string(static_cast<long long>(expire)) + "\n";
+    std::string base64Result;
+
+#ifdef USE_OPENSSL
     unsigned char result[SHA256_DIGEST_LENGTH];
     unsigned resultLen = sizeof(result);
-    std::string base64Result;
     HMAC(EVP_sha256(), key.data(), key.length(),
             reinterpret_cast<const unsigned char *>(rawContentToBeSigned.data()),
             rawContentToBeSigned.length(), result, &resultLen);
@@ -871,7 +872,7 @@ static std::string hmacsha256(uint32_t sdkappid, const std::string& identifier,
 
     mbedtls_md_init(&ctx);
     mbedtls_md_setup(&ctx, mbedtls_md_info_from_type(md_type), 1);
-    mbedtls_md_hmac_starts(&ctx, key.data(), key.length());
+    mbedtls_md_hmac_starts(&ctx, reinterpret_cast<const unsigned char *>(key.data()), key.length());
     mbedtls_md_hmac_update(&ctx,
             reinterpret_cast<const unsigned char *>(rawContentToBeSigned.data()),
             rawContentToBeSigned.length());
