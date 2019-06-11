@@ -53,7 +53,7 @@
     \"TLS.version\": \"%s\"\
     }"
 
-#define DEFAULT_EXPIRE  (24*3600*180)        // é»˜è®¤æœ‰æ•ˆæœŸï¼Œ180 å¤©
+#define DEFAULT_EXPIRE  (24*3600*180)        // Ä¬ÈÏÓĞĞ§ÆÚ£¬180 Ìì
 #define TIME_UT_FORM 1
 #define BASE_TYPE "account_type,identifier,sdk_appid,time,expire_after"
 
@@ -72,7 +72,7 @@ static std::string hmacsha256(uint32_t sdkappid, const std::string& identifier,
 
 namespace tls_signature_inner{
 
-//å»æ‰æŸäº›base64ä¸­ç”Ÿæˆçš„\r\n space
+//È¥µôÄ³Ğ©base64ÖĞÉú³ÉµÄ\r\n space
 static std::string base64_strip(const void* data, size_t data_len)
 {
     const char* d = static_cast<const char*>(data);
@@ -591,15 +591,15 @@ std::string get_sig_version(rapidjson::Document& sig)
 }
 
 /**
- * æ ¡éªŒç­¾åï¼Œå…¼å®¹ç›®å‰æ‰€æœ‰ç‰ˆæœ¬ã€‚
- * @param sig ç­¾åå†…å®¹
- * @param key å¯†é’¥ï¼Œå¦‚æœæ˜¯æ—©æœŸéå¯¹ç§°ç‰ˆæœ¬ï¼Œé‚£ä¹ˆè¿™é‡Œæ˜¯å…¬é’¥
- * @param pubKeyLen å¯†é’¥å†…å®¹é•¿åº¦
- * @param sigInfo éœ€è¦æ ¡éªŒçš„ç­¾åæ˜æ–‡ä¿¡æ¯
- * @param expireTime ä¼ å‡ºå‚æ•°ï¼Œæœ‰æ•ˆæœŸï¼Œå•ä½ç§’
- * @param initTime ä¼ å‡ºå‚æ•°ï¼Œç­¾åç”Ÿæˆçš„ unix æ—¶é—´æˆ³
- * @param errMsg ä¼ å‡ºå‚æ•°ï¼Œå¦‚æœå‡ºé”™ï¼Œè¿™é‡Œæœ‰é”™è¯¯ä¿¡æ¯
- * @return 0 ä¸ºæˆåŠŸï¼Œé 0 ä¸ºå¤±è´¥
+ * Ğ£ÑéÇ©Ãû£¬¼æÈİÄ¿Ç°ËùÓĞ°æ±¾¡£
+ * @param sig Ç©ÃûÄÚÈİ
+ * @param key ÃÜÔ¿£¬Èç¹ûÊÇÔçÆÚ·Ç¶Ô³Æ°æ±¾£¬ÄÇÃ´ÕâÀïÊÇ¹«Ô¿
+ * @param pubKeyLen ÃÜÔ¿ÄÚÈİ³¤¶È
+ * @param sigInfo ĞèÒªĞ£ÑéµÄÇ©ÃûÃ÷ÎÄĞÅÏ¢
+ * @param expireTime ´«³ö²ÎÊı£¬ÓĞĞ§ÆÚ£¬µ¥Î»Ãë
+ * @param initTime ´«³ö²ÎÊı£¬Ç©ÃûÉú³ÉµÄ unix Ê±¼ä´Á
+ * @param errMsg ´«³ö²ÎÊı£¬Èç¹û³ö´í£¬ÕâÀïÓĞ´íÎóĞÅÏ¢
+ * @return 0 Îª³É¹¦£¬·Ç 0 ÎªÊ§°Ü
  */
 TLS_API int tls_check_signature_ex(
     const std::string& sig,
@@ -618,7 +618,7 @@ TLS_API int tls_check_signature_ex(
 
     rapidjson::Document sigDoc;
     int ret = 0;
-    // æœ€æ—©æœŸç‰ˆæœ¬ä¸º json æ˜æ–‡å­—ç¬¦ä¸²
+    // ×îÔçÆÚ°æ±¾Îª json Ã÷ÎÄ×Ö·û´®
     if (!sigDoc.Parse(sig.c_str()).HasParseError()) {
         ret = tls_check_signature_inner(sigDoc,
                 std::string(key, pubKeyLen), errMsg);
@@ -632,7 +632,7 @@ TLS_API int tls_check_signature_ex(
 
         std::string version = get_sig_version(sigDoc);
         if ("2.0" == version) {
-            // æœ€æ–°çš„ 2.0 ç‰ˆæœ¬
+            // ×îĞÂµÄ 2.0 °æ±¾
             return verify_sig_v2(sigDoc,
                     strtol(sigInfo.strAppid.c_str(), NULL, 10),
                     sigInfo.strIdentify, key, initTime, expireTime, errMsg);
@@ -689,7 +689,7 @@ TLS_API int tls_gen_signature_ex(
 	return tls_gen_signature(strJson,strSig,pPriKey,uPriKeyLen,strErrMsg,TIME_UT_FORM);
 }
 
-// å¸¦æœ‰æ•ˆæœŸç”Ÿæˆ sig çš„æ¥å£
+// ´øÓĞĞ§ÆÚÉú³É sig µÄ½Ó¿Ú
 TLS_API int tls_gen_signature_ex2_with_expire(
     uint32_t dwSdkAppid,
     const string& strIdentifier,
@@ -712,7 +712,7 @@ TLS_API int tls_gen_signature_ex2_with_expire(
 	return ret;
 }
 
-// ç®€åŒ–ç‰ˆç”Ÿæˆ sig çš„æ¥å£
+// ¼ò»¯°æÉú³É sig µÄ½Ó¿Ú
 TLS_API int tls_gen_signature_ex2(
     uint32_t dwSdkAppid,
     const string& strIdentifier,
@@ -824,13 +824,13 @@ TLS_API int gen_sig(uint32_t sdkappid, const std::string& identifier, const std:
 }
 
 /**
- * @brief ç”Ÿæˆç­¾åå‡½æ•° v2 ç‰ˆæœ¬
- * @param sdkappid åº”ç”¨ID
- * @param identifier ç”¨æˆ·è´¦å·ï¼Œutf-8 ç¼–ç 
- * @param key å¯†é’¥
- * @param expire æœ‰æ•ˆæœŸï¼Œå•ä½ç§’
- * @param errMsg é”™è¯¯ä¿¡æ¯
- * @return 0 ä¸ºæˆåŠŸï¼Œé 0 ä¸ºå¤±è´¥
+ * @brief Éú³ÉÇ©Ãûº¯Êı v2 °æ±¾
+ * @param sdkappid Ó¦ÓÃID
+ * @param identifier ÓÃ»§ÕËºÅ£¬utf-8 ±àÂë
+ * @param key ÃÜÔ¿
+ * @param expire ÓĞĞ§ÆÚ£¬µ¥Î»Ãë
+ * @param errMsg ´íÎóĞÅÏ¢
+ * @return 0 Îª³É¹¦£¬·Ç 0 ÎªÊ§°Ü
  */
 TLS_API int gen_sig_v2(uint32_t sdkappid, const std::string& identifier,
         const std::string& key, int expire, std::string& sig, std::string& errMsg) {
@@ -848,7 +848,7 @@ TLS_API int gen_sig_v2(uint32_t sdkappid, const std::string& identifier,
     return JsonToSig(sigDoc, sig, errMsg);
 }
 
-// ä½¿ç”¨ hmac sha256 ç”Ÿå­˜ sig
+// Ê¹ÓÃ hmac sha256 Éú´æ sig
 static std::string hmacsha256(uint32_t sdkappid, const std::string& identifier,
         uint64_t initTime, uint64_t expire, const std::string& key)
 {
@@ -884,13 +884,13 @@ static std::string hmacsha256(uint32_t sdkappid, const std::string& identifier,
 }
 
 /**
- * @brief æ ¡éªŒç­¾å v2 ç‰ˆæœ¬ å†…éƒ¨å‡½æ•°ï¼Œç”¨æˆ·æ ¡éªŒ sig è¯·ä½¿ç”¨ @see tls_check_signature_ex
- * @param sdkappid åº”ç”¨ ID
- * @param identifier ç”¨æˆ·è´¦å·
- * @param key åŠ å¯† key
- * @param sig ç­¾åå†…å®¹
- * @param errMsg å¦‚æœå‡ºé”™è¿™é‡Œæœ‰é”™è¯¯ä¿¡æ¯
- * @return 0 ä¸ºæˆåŠŸï¼Œé 0 ä¸ºå¤±è´¥
+ * @brief Ğ£ÑéÇ©Ãû v2 °æ±¾ ÄÚ²¿º¯Êı£¬ÓÃ»§Ğ£Ñé sig ÇëÊ¹ÓÃ @see tls_check_signature_ex
+ * @param sdkappid Ó¦ÓÃ ID
+ * @param identifier ÓÃ»§ÕËºÅ
+ * @param key ¼ÓÃÜ key
+ * @param sig Ç©ÃûÄÚÈİ
+ * @param errMsg Èç¹û³ö´íÕâÀïÓĞ´íÎóĞÅÏ¢
+ * @return 0 Îª³É¹¦£¬·Ç 0 ÎªÊ§°Ü
  */
 static int verify_sig_v2(
         const rapidjson::Document& sig,
@@ -902,7 +902,7 @@ static int verify_sig_v2(
         std::string& errMsg)
 {
 
-    // å…ˆæ ¡éªŒå­—æ®µ
+    // ÏÈĞ£Ñé×Ö¶Î
     if (!sig.HasMember("TLS.identifier") || !sig["TLS.identifier"].IsString()) {
         errMsg = "identifier field is missing";
         return CHECK_ERR7;
@@ -935,14 +935,14 @@ static int verify_sig_v2(
     }
     expireTime = sig["TLS.expire"].GetUint();
 
-    // æ ¡éªŒæœ‰æ•ˆæœŸ
+    // Ğ£ÑéÓĞĞ§ÆÚ
     uint64_t currTime = time(NULL);
     if (currTime > static_cast<uint64_t>(initTime)+ static_cast<uint64_t>(expireTime)) {
         errMsg = "sig expired";
         return CHECK_ERR9;
     }
 
-    // æ ¡éªŒ sig
+    // Ğ£Ñé sig
     if (!sig.HasMember("TLS.sig") || !sig["TLS.sig"].IsString()) {
         errMsg = "sig field is missing";
         return CHECK_ERR7;

@@ -13,19 +13,19 @@
 #include <string>
 
 /*
- * tls_gen_signature_ex æ¥æ”¶ä¸€ç³»åˆ—å‚æ•°ï¼Œè¿”å› sig
+ * tls_gen_signature_ex ½ÓÊÕÒ»ÏµÁĞ²ÎÊı£¬·µ»Ø sig
  *
- * @param dwExpire è¿‡æœŸæ—¶é•¿ï¼Œä»¥ç§’ä¸ºå•ä½ï¼Œå»ºè®®ä¸è¶…è¿‡ä¸€ä¸ªæœˆï¼Œå¦‚æœç­¾åæœ‰æ•ˆæœŸä¸º 10 å¤©ï¼Œé‚£å°±å¡« 10*24*3600
- * @param strAppid3Rd ç¬¬ä¸‰æ–¹å¼€æ”¾å¹³å°è´¦å· appidï¼Œå¦‚æœæ˜¯è‡ªæœ‰çš„è´¦å·ï¼Œé‚£ä¹ˆç›´æ¥å¡« sdkappid çš„å­—ç¬¦ä¸²å½¢å¼
- * @param dwSdkAppid åˆ›å»ºåº”ç”¨æ—¶é¡µé¢ä¸Šåˆ†é…çš„ sdkappid
- * @param strIdentifier ç”¨æˆ·æ ‡ç¤ºç¬¦ï¼Œä¹Ÿå°±æ˜¯æˆ‘ä»¬å¸¸è¯´çš„ç”¨æˆ· id
- * @param dwAccountType åˆ›å»ºåº”ç”¨æ—¶é¡µé¢ä¸Šåˆ†é…çš„ accounttype
- * @param strSig è¿”å›çš„ sig
- * @param pPriKey ç§é’¥å†…å®¹ï¼Œè¯·æ³¨æ„ä¸æ˜¯ç§é’¥æ–‡ä»¶å
- * @param uPriKeyLen ç§é’¥å†…å®¹é•¿åº¦
- * @param strErrMsg å¦‚æœå‡ºé”™è¿™é‡Œå‡ºé”™ä¿¡æ¯
+ * @param dwExpire ¹ıÆÚÊ±³¤£¬ÒÔÃëÎªµ¥Î»£¬½¨Òé²»³¬¹ıÒ»¸öÔÂ£¬Èç¹ûÇ©ÃûÓĞĞ§ÆÚÎª 10 Ìì£¬ÄÇ¾ÍÌî 10*24*3600
+ * @param strAppid3Rd µÚÈı·½¿ª·ÅÆ½Ì¨ÕËºÅ appid£¬Èç¹ûÊÇ×ÔÓĞµÄÕËºÅ£¬ÄÇÃ´Ö±½ÓÌî sdkappid µÄ×Ö·û´®ĞÎÊ½
+ * @param dwSdkAppid ´´½¨Ó¦ÓÃÊ±Ò³ÃæÉÏ·ÖÅäµÄ sdkappid
+ * @param strIdentifier ÓÃ»§±êÊ¾·û£¬Ò²¾ÍÊÇÎÒÃÇ³£ËµµÄÓÃ»§ id
+ * @param dwAccountType ´´½¨Ó¦ÓÃÊ±Ò³ÃæÉÏ·ÖÅäµÄ accounttype
+ * @param strSig ·µ»ØµÄ sig
+ * @param pPriKey Ë½Ô¿ÄÚÈİ£¬Çë×¢Òâ²»ÊÇË½Ô¿ÎÄ¼şÃû
+ * @param uPriKeyLen Ë½Ô¿ÄÚÈİ³¤¶È
+ * @param strErrMsg Èç¹û³ö´íÕâÀï³ö´íĞÅÏ¢
  *
- * @return 0 è¡¨ç¤ºæˆåŠŸï¼Œé 0 è¡¨ç¤ºå¤±è´¥ï¼Œå¤±è´¥ä¿¡æ¯ä¼šåœ¨ strErrMsg ä¸­ç»™å‡º
+ * @return 0 ±íÊ¾³É¹¦£¬·Ç 0 ±íÊ¾Ê§°Ü£¬Ê§°ÜĞÅÏ¢»áÔÚ strErrMsg ÖĞ¸ø³ö
  */
 TLS_API int tls_gen_signature_ex(
     uint32_t dwExpire,
@@ -40,16 +40,16 @@ TLS_API int tls_gen_signature_ex(
 );
 
 /*
- * @brief tls_gen_signature_ex2_with_expire æ¥æ”¶ä¸€ç³»åˆ—å‚æ•°ï¼Œè¿”å› sig
+ * @brief tls_gen_signature_ex2_with_expire ½ÓÊÕÒ»ÏµÁĞ²ÎÊı£¬·µ»Ø sig
  *
- * @param dwSdkAppid åˆ›å»ºåº”ç”¨æ—¶é¡µé¢ä¸Šåˆ†é…çš„ sdkappid
- * @param strIdentifier ç”¨æˆ·æ ‡ç¤ºç¬¦ï¼Œä¹Ÿå°±æ˜¯æˆ‘ä»¬å¸¸è¯´çš„ç”¨æˆ· id
- * @param dwExpire å¼€å‘è€…è‡ªå®šä¹‰çš„æœ‰æ•ˆæœŸï¼Œå•ä½æ˜¯ç§’ï¼Œæ¨èæ—¶é•¿ä¸º 1 ä¸ªæœˆ
- * @param strSig è¿”å›çš„ sig
- * @param strPriKey ç§é’¥å†…å®¹ï¼Œè¯·æ³¨æ„ä¸æ˜¯ç§é’¥æ–‡ä»¶å
- * @param strErrMsg å¦‚æœå‡ºé”™è¿™é‡Œå‡ºé”™ä¿¡æ¯
+ * @param dwSdkAppid ´´½¨Ó¦ÓÃÊ±Ò³ÃæÉÏ·ÖÅäµÄ sdkappid
+ * @param strIdentifier ÓÃ»§±êÊ¾·û£¬Ò²¾ÍÊÇÎÒÃÇ³£ËµµÄÓÃ»§ id
+ * @param dwExpire ¿ª·¢Õß×Ô¶¨ÒåµÄÓĞĞ§ÆÚ£¬µ¥Î»ÊÇÃë£¬ÍÆ¼öÊ±³¤Îª 1 ¸öÔÂ
+ * @param strSig ·µ»ØµÄ sig
+ * @param strPriKey Ë½Ô¿ÄÚÈİ£¬Çë×¢Òâ²»ÊÇË½Ô¿ÎÄ¼şÃû
+ * @param strErrMsg Èç¹û³ö´íÕâÀï³ö´íĞÅÏ¢
  *
- * @return 0 è¡¨ç¤ºæˆåŠŸï¼Œé 0 è¡¨ç¤ºå¤±è´¥ï¼Œå¤±è´¥ä¿¡æ¯ä¼šåœ¨ strErrMsg ä¸­ç»™å‡º
+ * @return 0 ±íÊ¾³É¹¦£¬·Ç 0 ±íÊ¾Ê§°Ü£¬Ê§°ÜĞÅÏ¢»áÔÚ strErrMsg ÖĞ¸ø³ö
  */
 TLS_API int tls_gen_signature_ex2_with_expire(
     uint32_t dwSdkAppid,
@@ -60,15 +60,15 @@ TLS_API int tls_gen_signature_ex2_with_expire(
     std::string& strErrMsg);
 
 /*
- * @brief tls_gen_signature_ex2 æ¥æ”¶ä¸€ç³»åˆ—å‚æ•°ï¼Œè¿”å› sigï¼Œæœ‰æ•ˆé‡‡ç”¨é»˜è®¤çš„180å¤©
+ * @brief tls_gen_signature_ex2 ½ÓÊÕÒ»ÏµÁĞ²ÎÊı£¬·µ»Ø sig£¬ÓĞĞ§²ÉÓÃÄ¬ÈÏµÄ180Ìì
  *
- * @param dwSdkAppid åˆ›å»ºåº”ç”¨æ—¶é¡µé¢ä¸Šåˆ†é…çš„ sdkappid
- * @param strIdentifier ç”¨æˆ·æ ‡ç¤ºç¬¦ï¼Œä¹Ÿå°±æ˜¯æˆ‘ä»¬å¸¸è¯´çš„ç”¨æˆ· id
- * @param strSig è¿”å›çš„ sig
- * @param strPriKey ç§é’¥å†…å®¹ï¼Œè¯·æ³¨æ„ä¸æ˜¯ç§é’¥æ–‡ä»¶å
- * @param strErrMsg å¦‚æœå‡ºé”™è¿™é‡Œå‡ºé”™ä¿¡æ¯
+ * @param dwSdkAppid ´´½¨Ó¦ÓÃÊ±Ò³ÃæÉÏ·ÖÅäµÄ sdkappid
+ * @param strIdentifier ÓÃ»§±êÊ¾·û£¬Ò²¾ÍÊÇÎÒÃÇ³£ËµµÄÓÃ»§ id
+ * @param strSig ·µ»ØµÄ sig
+ * @param strPriKey Ë½Ô¿ÄÚÈİ£¬Çë×¢Òâ²»ÊÇË½Ô¿ÎÄ¼şÃû
+ * @param strErrMsg Èç¹û³ö´íÕâÀï³ö´íĞÅÏ¢
  *
- * @return 0 è¡¨ç¤ºæˆåŠŸï¼Œé 0 è¡¨ç¤ºå¤±è´¥ï¼Œå¤±è´¥ä¿¡æ¯ä¼šåœ¨ strErrMsg ä¸­ç»™å‡º
+ * @return 0 ±íÊ¾³É¹¦£¬·Ç 0 ±íÊ¾Ê§°Ü£¬Ê§°ÜĞÅÏ¢»áÔÚ strErrMsg ÖĞ¸ø³ö
  */
 TLS_API int tls_gen_signature_ex2(
     uint32_t dwSdkAppid,
@@ -79,27 +79,27 @@ TLS_API int tls_gen_signature_ex2(
 );
 
 /**
- * @brief æè¿° sig å†…å®¹çš„ç»“æ„ä½“ï¼Œå„ä¸ªå­—æ®µçš„å«ä¹‰å¯ä»¥å‚è€ƒ tls_gen_signature_ex()
+ * @brief ÃèÊö sig ÄÚÈİµÄ½á¹¹Ìå£¬¸÷¸ö×Ö¶ÎµÄº¬Òå¿ÉÒÔ²Î¿¼ tls_gen_signature_ex()
  * @see tls_gen_signature_ex()
  */
 typedef struct
 {
 	std::string strAccountType;
 	std::string strAppid3Rd;
-	std::string strAppid;            /**< å³ sdkappid  */
+	std::string strAppid;            /**< ¼´ sdkappid  */
 	std::string strIdentify;
 } SigInfo;
 
 /**
- * @brief æ ¡éªŒç­¾åï¼Œå…¼å®¹ç›®å‰æ‰€æœ‰ç‰ˆæœ¬ã€‚
- * @param sig ç­¾åå†…å®¹
- * @param key å¯†é’¥ï¼Œå¦‚æœæ˜¯æ—©æœŸéå¯¹ç§°ç‰ˆæœ¬ï¼Œé‚£ä¹ˆè¿™é‡Œæ˜¯å…¬é’¥
- * @param pubKeyLen å¯†é’¥å†…å®¹é•¿åº¦
- * @param sigInfo éœ€è¦æ ¡éªŒçš„ç­¾åæ˜æ–‡ä¿¡æ¯
- * @param expireTime ä¼ å‡ºå‚æ•°ï¼Œæœ‰æ•ˆæœŸï¼Œå•ä½ç§’
- * @param initTime ä¼ å‡ºå‚æ•°ï¼Œç­¾åç”Ÿæˆçš„ unix æ—¶é—´æˆ³
- * @param errMsg ä¼ å‡ºå‚æ•°ï¼Œå¦‚æœå‡ºé”™ï¼Œè¿™é‡Œæœ‰é”™è¯¯ä¿¡æ¯
- * @return 0 ä¸ºæˆåŠŸï¼Œé 0 ä¸ºå¤±è´¥
+ * @brief Ğ£ÑéÇ©Ãû£¬¼æÈİÄ¿Ç°ËùÓĞ°æ±¾¡£
+ * @param sig Ç©ÃûÄÚÈİ
+ * @param key ÃÜÔ¿£¬Èç¹ûÊÇÔçÆÚ·Ç¶Ô³Æ°æ±¾£¬ÄÇÃ´ÕâÀïÊÇ¹«Ô¿
+ * @param pubKeyLen ÃÜÔ¿ÄÚÈİ³¤¶È
+ * @param sigInfo ĞèÒªĞ£ÑéµÄÇ©ÃûÃ÷ÎÄĞÅÏ¢
+ * @param expireTime ´«³ö²ÎÊı£¬ÓĞĞ§ÆÚ£¬µ¥Î»Ãë
+ * @param initTime ´«³ö²ÎÊı£¬Ç©ÃûÉú³ÉµÄ unix Ê±¼ä´Á
+ * @param errMsg ´«³ö²ÎÊı£¬Èç¹û³ö´í£¬ÕâÀïÓĞ´íÎóĞÅÏ¢
+ * @return 0 Îª³É¹¦£¬·Ç 0 ÎªÊ§°Ü
  */
 TLS_API int tls_check_signature_ex(
     const std::string& sig,
@@ -111,17 +111,17 @@ TLS_API int tls_check_signature_ex(
     std::string& errMsg);
 
 /**
- * @brief éªŒè¯ sig æ˜¯å¦åˆæ³•
+ * @brief ÑéÖ¤ sig ÊÇ·ñºÏ·¨
  *
- * @param strSig sig çš„å†…å®¹
- * @param strPubKey å…¬é’¥çš„å†…å®¹
- * @param dwSdkAppid åº”ç”¨çš„ sdkappid
- * @param strIdentifier ç”¨æˆ·idï¼Œä¼šä¸ sig ä¸­çš„å€¼è¿›è¡Œå¯¹æ¯”
- * @param dwExpireTime è¿”å› sig çš„æœ‰æ•ˆæœŸ
- * @param dwInitTime è¿”å› sig çš„ç”Ÿæˆæ—¶é—´
- * @param strErrMsg å¦‚æœå‡ºé”™ï¼Œè¿™é‡Œæœ‰é”™è¯¯ä¿¡æ¯
+ * @param strSig sig µÄÄÚÈİ
+ * @param strPubKey ¹«Ô¿µÄÄÚÈİ
+ * @param dwSdkAppid Ó¦ÓÃµÄ sdkappid
+ * @param strIdentifier ÓÃ»§id£¬»áÓë sig ÖĞµÄÖµ½øĞĞ¶Ô±È
+ * @param dwExpireTime ·µ»Ø sig µÄÓĞĞ§ÆÚ
+ * @param dwInitTime ·µ»Ø sig µÄÉú³ÉÊ±¼ä
+ * @param strErrMsg Èç¹û³ö´í£¬ÕâÀïÓĞ´íÎóĞÅÏ¢
  *
- * @return 0 è¡¨ç¤ºæˆåŠŸï¼Œé 0 è¡¨ç¤ºå¤±è´¥ï¼ŒstrErrMsg ä¸­æœ‰å¤±è´¥ä¿¡æ¯
+ * @return 0 ±íÊ¾³É¹¦£¬·Ç 0 ±íÊ¾Ê§°Ü£¬strErrMsg ÖĞÓĞÊ§°ÜĞÅÏ¢
  */
 TLS_API int tls_check_signature_ex2(
     const std::string& strSig,
@@ -134,11 +134,11 @@ TLS_API int tls_check_signature_ex2(
 );
 
 /**
- * @brief ç”Ÿæˆ sigï¼Œæ­¤å‡½æ•°å·²â€œä¸æ¨èâ€ä½¿ç”¨
+ * @brief Éú³É sig£¬´Ëº¯ÊıÒÑ¡°²»ÍÆ¼ö¡±Ê¹ÓÃ
  * @see tls_check_signature_ex()
  *
- * @param strJson è¾“å…¥å‚æ•°çš„ json ä¸²
- * strJson ç¤ºä¾‹
+ * @param strJson ÊäÈë²ÎÊıµÄ json ´®
+ * strJson Ê¾Àı
  * {
  *     "TLS.account_type": "107",
  *     "TLS.appid_at_3rd": "150000000",
@@ -146,14 +146,14 @@ TLS_API int tls_check_signature_ex2(
  *     "TLS.sdk_appid": "150000000",
  *     "TLS.expire_after": "86400"
  * }
- * å€¼å¾—è¯´æ˜çš„æ˜¯ TLS.appid_at_3rdï¼Œå¦‚æœä¸æ˜¯ç¬¬ä¸‰æ–¹å¼€æ”¾å¹³å°çš„è´¦å·ï¼Œé‚£ä¹ˆè¿™ä¸ªå­—æ®µå¡«å†™ä¸ TLS.sdk_appid ä¸€è‡´å°±å¯ä»¥äº†ã€‚
- * @param strSig è¿”å› sig çš„å†…å®¹
- * @param pPriKey ç§é’¥å†…å®¹ï¼Œæ³¨æ„ä¸æ˜¯ç§é’¥æ–‡ä»¶çš„è·¯å¾„
- * @param uPriKeyLen ç§é’¥å†…å®¹çš„é•¿åº¦
- * @param strErrMsg å¦‚æœå‡ºé”™ï¼Œè¿™é‡Œæœ‰å‡ºé”™ä¿¡æ¯
- * @param dwFlag ä¸ºæ—¶é—´æ ¼å¼ï¼Œç›®å‰é»˜è®¤å³å¯
+ * ÖµµÃËµÃ÷µÄÊÇ TLS.appid_at_3rd£¬Èç¹û²»ÊÇµÚÈı·½¿ª·ÅÆ½Ì¨µÄÕËºÅ£¬ÄÇÃ´Õâ¸ö×Ö¶ÎÌîĞ´Óë TLS.sdk_appid Ò»ÖÂ¾Í¿ÉÒÔÁË¡£
+ * @param strSig ·µ»Ø sig µÄÄÚÈİ
+ * @param pPriKey Ë½Ô¿ÄÚÈİ£¬×¢Òâ²»ÊÇË½Ô¿ÎÄ¼şµÄÂ·¾¶
+ * @param uPriKeyLen Ë½Ô¿ÄÚÈİµÄ³¤¶È
+ * @param strErrMsg Èç¹û³ö´í£¬ÕâÀïÓĞ³ö´íĞÅÏ¢
+ * @param dwFlag ÎªÊ±¼ä¸ñÊ½£¬Ä¿Ç°Ä¬ÈÏ¼´¿É
  *
- * @return è¿”å› 0 è¡¨ç¤ºæˆåŠŸï¼Œé 0 å¤±è´¥ï¼ŒstrErrMsg æœ‰å‡ºé”™ä¿¡æ¯
+ * @return ·µ»Ø 0 ±íÊ¾³É¹¦£¬·Ç 0 Ê§°Ü£¬strErrMsg ÓĞ³ö´íĞÅÏ¢
  */
 TLS_API int tls_gen_signature(
     const std::string& strJson,
@@ -165,23 +165,23 @@ TLS_API int tls_gen_signature(
     );
 
 enum {
-	CHECK_ERR1  =  1,       // sig ä¸ºç©º
-	CHECK_ERR2 ,            // sig base64 è§£ç å¤±è´¥
-	CHECK_ERR3 ,            // sig zip è§£å‹ç¼©å¤±è´¥
-	CHECK_ERR4 ,            // sig ä½¿ç”¨ json è§£ææ—¶å¤±è´¥
-	CHECK_ERR5 ,            // sig ä½¿ç”¨ json è§£ææ—¶å¤±è´¥
-	CHECK_ERR6 ,            // sig ä¸­ json ä¸² sig å­—æ®µ base64 è§£ç å¤±è´¥
-	CHECK_ERR7 ,            // sig ä¸­å­—æ®µç¼ºå¤±
-	CHECK_ERR8 ,            // sig æ ¡éªŒç­¾åå¤±è´¥ï¼Œä¸€èˆ¬æ˜¯ç§˜é’¥ä¸æ­£ç¡®
-	CHECK_ERR9 ,            // sig è¿‡æœŸ
-	CHECK_ERR10 ,           // sig ä½¿ç”¨ json è§£ææ—¶å¤±è´¥
-	CHECK_ERR11 ,           // sig ä¸­ appid_at_3rd ä¸æ˜æ–‡ä¸åŒ¹é…
-	CHECK_ERR12 ,           // sig ä¸­ acctype ä¸æ˜æ–‡ä¸åŒ¹é…
-	CHECK_ERR13 ,           // sig ä¸­ identifier ä¸æ˜æ–‡ä¸åŒ¹é…
-	CHECK_ERR14 ,           // sig ä¸­ sdk_appid ä¸æ˜æ–‡ä¸åŒ¹é…
-    CHECK_ERR15 ,           // sig ä¸­ userbuf å¼‚å¸¸
-    CHECK_ERR16 ,           // å†…éƒ¨é”™è¯¯
-    CHECK_ERR17 ,           // ç­¾åå¤±è´¥ å¯èƒ½æ˜¯ç§é’¥æœ‰è¯¯
+	CHECK_ERR1  =  1,       // sig Îª¿Õ
+	CHECK_ERR2 ,            // sig base64 ½âÂëÊ§°Ü
+	CHECK_ERR3 ,            // sig zip ½âÑ¹ËõÊ§°Ü
+	CHECK_ERR4 ,            // sig Ê¹ÓÃ json ½âÎöÊ±Ê§°Ü
+	CHECK_ERR5 ,            // sig Ê¹ÓÃ json ½âÎöÊ±Ê§°Ü
+	CHECK_ERR6 ,            // sig ÖĞ json ´® sig ×Ö¶Î base64 ½âÂëÊ§°Ü
+	CHECK_ERR7 ,            // sig ÖĞ×Ö¶ÎÈ±Ê§
+	CHECK_ERR8 ,            // sig Ğ£ÑéÇ©ÃûÊ§°Ü£¬Ò»°ãÊÇÃØÔ¿²»ÕıÈ·
+	CHECK_ERR9 ,            // sig ¹ıÆÚ
+	CHECK_ERR10 ,           // sig Ê¹ÓÃ json ½âÎöÊ±Ê§°Ü
+	CHECK_ERR11 ,           // sig ÖĞ appid_at_3rd ÓëÃ÷ÎÄ²»Æ¥Åä
+	CHECK_ERR12 ,           // sig ÖĞ acctype ÓëÃ÷ÎÄ²»Æ¥Åä
+	CHECK_ERR13 ,           // sig ÖĞ identifier ÓëÃ÷ÎÄ²»Æ¥Åä
+	CHECK_ERR14 ,           // sig ÖĞ sdk_appid ÓëÃ÷ÎÄ²»Æ¥Åä
+    CHECK_ERR15 ,           // sig ÖĞ userbuf Òì³£
+    CHECK_ERR16 ,           // ÄÚ²¿´íÎó
+    CHECK_ERR17 ,           // Ç©ÃûÊ§°Ü ¿ÉÄÜÊÇË½Ô¿ÓĞÎó
 
 	CHECK_ERR_MAX,
 };
@@ -191,15 +191,15 @@ enum {
 /*
  * @brief tls_gen_userbuf_ticket
  *
- * @param dwSdkAppid åˆ›å»ºåº”ç”¨æ—¶é¡µé¢ä¸Šåˆ†é…çš„ sdkappid
- * @param strIdentifier ç”¨æˆ·æ ‡ç¤ºç¬¦ï¼Œä¹Ÿå°±æ˜¯æˆ‘ä»¬å¸¸è¯´çš„ç”¨æˆ· id
- * @param dwExpire å¼€å‘è€…è‡ªå®šä¹‰çš„æœ‰æ•ˆæœŸï¼Œå•ä½æ˜¯ç§’
- * @param strSig è¿”å›çš„ sig
- * @param strPriKey ç§é’¥å†…å®¹ï¼Œè¯·æ³¨æ„ä¸æ˜¯ç§é’¥æ–‡ä»¶å
- * @param strUserbuf ç”¨æˆ·è‡ªå®šä¹‰å†…å®¹
- * @param strErrMsg å¦‚æœå‡ºé”™è¿™é‡Œå‡ºé”™ä¿¡æ¯
+ * @param dwSdkAppid ´´½¨Ó¦ÓÃÊ±Ò³ÃæÉÏ·ÖÅäµÄ sdkappid
+ * @param strIdentifier ÓÃ»§±êÊ¾·û£¬Ò²¾ÍÊÇÎÒÃÇ³£ËµµÄÓÃ»§ id
+ * @param dwExpire ¿ª·¢Õß×Ô¶¨ÒåµÄÓĞĞ§ÆÚ£¬µ¥Î»ÊÇÃë
+ * @param strSig ·µ»ØµÄ sig
+ * @param strPriKey Ë½Ô¿ÄÚÈİ£¬Çë×¢Òâ²»ÊÇË½Ô¿ÎÄ¼şÃû
+ * @param strUserbuf ÓÃ»§×Ô¶¨ÒåÄÚÈİ
+ * @param strErrMsg Èç¹û³ö´íÕâÀï³ö´íĞÅÏ¢
  *
- * @return 0 è¡¨ç¤ºæˆåŠŸï¼Œé 0 è¡¨ç¤ºå¤±è´¥ï¼Œå¤±è´¥ä¿¡æ¯ä¼šåœ¨ strErrMsg ä¸­ç»™å‡º
+ * @return 0 ±íÊ¾³É¹¦£¬·Ç 0 ±íÊ¾Ê§°Ü£¬Ê§°ÜĞÅÏ¢»áÔÚ strErrMsg ÖĞ¸ø³ö
  */
 TLS_API int tls_gen_userbuf_ticket(
     uint32_t dwSdkAppid,
@@ -211,18 +211,18 @@ TLS_API int tls_gen_userbuf_ticket(
     std::string& strErrMsg);
 
 /**
- * @brief éªŒè¯ sig æ˜¯å¦åˆæ³•
+ * @brief ÑéÖ¤ sig ÊÇ·ñºÏ·¨
  *
- * @param strSig sig çš„å†…å®¹
- * @param strPubKey å…¬é’¥çš„å†…å®¹
- * @param dwSdkAppid åº”ç”¨çš„ sdkappid
- * @param strIdentifier ç”¨æˆ·idï¼Œä¼šä¸ sig ä¸­çš„å€¼è¿›è¡Œå¯¹æ¯”
- * @param dwExpireTime è¿”å› sig çš„æœ‰æ•ˆæœŸ
- * @param dwInitTime è¿”å› sig çš„ç”Ÿæˆæ—¶é—´
- * @param strUserbuf è¿”å›ç”Ÿæˆæ—¶çš„userbuf
- * @param strErrMsg å¦‚æœå‡ºé”™ï¼Œè¿™é‡Œæœ‰é”™è¯¯ä¿¡æ¯
+ * @param strSig sig µÄÄÚÈİ
+ * @param strPubKey ¹«Ô¿µÄÄÚÈİ
+ * @param dwSdkAppid Ó¦ÓÃµÄ sdkappid
+ * @param strIdentifier ÓÃ»§id£¬»áÓë sig ÖĞµÄÖµ½øĞĞ¶Ô±È
+ * @param dwExpireTime ·µ»Ø sig µÄÓĞĞ§ÆÚ
+ * @param dwInitTime ·µ»Ø sig µÄÉú³ÉÊ±¼ä
+ * @param strUserbuf ·µ»ØÉú³ÉÊ±µÄuserbuf
+ * @param strErrMsg Èç¹û³ö´í£¬ÕâÀïÓĞ´íÎóĞÅÏ¢
  *
- * @return 0 è¡¨ç¤ºæˆåŠŸï¼Œé 0 è¡¨ç¤ºå¤±è´¥ï¼ŒstrErrMsg ä¸­æœ‰å¤±è´¥ä¿¡æ¯
+ * @return 0 ±íÊ¾³É¹¦£¬·Ç 0 ±íÊ¾Ê§°Ü£¬strErrMsg ÖĞÓĞÊ§°ÜĞÅÏ¢
  */
 TLS_API int tls_check_userbuf_ticket(
     const std::string& strTicket,
@@ -238,13 +238,13 @@ TLS_API int tls_check_userbuf_ticket(
 TLS_API int gen_sig(uint32_t sdkappid, const std::string& identifier, const std::string& priKey, std::string& sig);
 
 /**
- * @brief ç”Ÿæˆç­¾åå‡½æ•° v2 ç‰ˆæœ¬
- * @param sdkappid åº”ç”¨ID
- * @param identifier ç”¨æˆ·è´¦å·ï¼Œutf-8 ç¼–ç 
- * @param key å¯†é’¥
- * @param expire æœ‰æ•ˆæœŸï¼Œå•ä½ç§’
- * @param errMsg é”™è¯¯ä¿¡æ¯
- * @return 0 ä¸ºæˆåŠŸï¼Œé 0 ä¸ºå¤±è´¥
+ * @brief Éú³ÉÇ©Ãûº¯Êı v2 °æ±¾
+ * @param sdkappid Ó¦ÓÃID
+ * @param identifier ÓÃ»§ÕËºÅ£¬utf-8 ±àÂë
+ * @param key ÃÜÔ¿
+ * @param expire ÓĞĞ§ÆÚ£¬µ¥Î»Ãë
+ * @param errMsg ´íÎóĞÅÏ¢
+ * @return 0 Îª³É¹¦£¬·Ç 0 ÎªÊ§°Ü
  */
 TLS_API int gen_sig_v2(uint32_t sdkappid, const std::string& identifier,
 		const std::string& key, int expire, std::string& sig, std::string& errMsg);
