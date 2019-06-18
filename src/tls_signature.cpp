@@ -60,17 +60,31 @@
 using namespace std;
 
 static int verify_sig_v2(
-        const rapidjson::Document& sig,
+        const rapidjson::Document& sigDoc,
         uint32_t sdkappid,
         const std::string& identifier,
         const std::string& key,
         uint32_t& initTime,
         uint32_t& expireTime,
         std::string& errMsg);
+
+static int verify_sig_v2(
+        const rapidjson::Document& sigDoc,
+        uint32_t sdkappid,
+        const std::string& identifier,
+        const std::string& key,
+        uint32_t& initTime,
+        uint32_t& expireTime,
+        std::string& userBuf,
+        std::string& errMsg);
+
 static std::string hmacsha256(uint32_t sdkappid, const std::string& identifier,
         uint64_t initTime, uint64_t expire, const std::string& key);
+static std::string hmacsha256(uint32_t sdkappid,
+        const std::string& identifier, uint64_t initTime, uint64_t expire,
+        const std::string& key, const std::string& userBuf);
 
-namespace tls_signature_inner{
+namespace tls_signature_inner {
 
 //去掉某些base64中生成的\r\n space
 static std::string base64_strip(const void* data, size_t data_len)
@@ -134,6 +148,7 @@ static int base64_decode(const char* data, size_t data_len, std::string &raw){
     return ret;
 }
 #endif
+
 static int base64_encode_url(const void *data, size_t data_len, std::string &base64){
     int ret = base64_encode(data, data_len, base64);
     if(ret != 0)return ret;
@@ -192,8 +207,9 @@ static int compress(const void *data, size_t data_len, std::string &compressed){
         reinterpret_cast<const Bytef*>(data), data_len, Z_BEST_SPEED);
     if(ret == Z_OK) compressed.resize(uLen);
     return ret;
-
 }
+
+
 static int uncompress(const void *data, size_t data_len, std::string &uncompressed){
     int ret;
     uncompressed.resize(data_len * 2);
@@ -259,19 +275,23 @@ TLS_API int SigToJson(const std::string &sig, std::string &json, std::string &er
     return 0;
 }
 
-static int SigToJson(const std::string &sig, rapidjson::Document &json, std::string  &errmsg){
+static int SigToJson(const std::string &sig,
+        rapidjson::Document &sigDoc, std::string  &errmsg)
+{
     std::string json_text;
     int ret = SigToJson(sig, json_text, errmsg);
     if(ret != 0)return ret;
-    if(json.Parse(json_text.data()).HasParseError()){
+    if(sigDoc.Parse(json_text.data()).HasParseError()){
         errmsg = fmt::sprintf("parse json failed");
         return CHECK_ERR4;
     }
     return 0;
 }
 
-static int CheckJson(const rapidjson::Document& json, const std::string& req_identifier,
-                     uint32_t req_appid, string& strErrMsg, uint32_t *init_time = NULL, uint32_t *expire_time = NULL, bool old_time = false)
+static int CheckJson(const rapidjson::Document& json,
+        const std::string& req_identifier, uint32_t req_appid,
+        string& strErrMsg, uint32_t *init_time = NULL,
+        uint32_t *expire_time = NULL, bool old_time = false)
 {
     rapidjson::Pointer p_indentifier("/TLS.identifier");
     const rapidjson::Value *identifier = p_indentifier.Get(json);
@@ -330,7 +350,10 @@ static int CheckJson(const rapidjson::Document& json, const std::string& req_ide
 	return 0;
 }
 
-static int JsonToUserbufSign(const rapidjson::Document &json, std::string &sign_buffer){
+
+static int JsonToUserbufSign(
+        const rapidjson::Document &json, std::string &sign_buffer)
+{
     if(!json.IsObject()) return -1;
 
     const char *pointer[] = {
@@ -354,7 +377,8 @@ static int JsonToUserbufSign(const rapidjson::Document &json, std::string &sign_
     }
     return 0;
 }
-static int JsonToSign(const rapidjson::Document &json, std::string &sign_buffer){
+static int JsonToSign(const rapidjson::Document &json, std::string &sign_buffer)
+{
     if(!json.IsObject()) return -1;
 
     static rapidjson::Pointer p_appid3rd("/TLS.appid_at_3rd");
@@ -384,8 +408,10 @@ static int JsonToSign(const rapidjson::Document &json, std::string &sign_buffer)
     return 0;
 }
 
+
 #ifdef USE_OPENSSL
-static int get_licence(char* pLicen, size_t* pLicenLen, const char* pData, uint32_t uDataLen, const string& strPrivateKey)
+static int get_licence(char* pLicen, size_t* pLicenLen, const char* pData,
+        uint32_t uDataLen, const string& strPrivateKey)
 {
     EVP_MD_CTX *mdctx = NULL;
     EVP_PKEY *key = NULL;
@@ -410,7 +436,9 @@ clean:
     if(ret) return ret;
     return -1;
 }
-static int check_licence(const char* pLicen, uint32_t uLicenLen, const char* pData, uint32_t uDataLen, const string& strPublicKey)
+
+static int check_licence(const char* pLicen, uint32_t uLicenLen,
+        const char* pData, uint32_t uDataLen, const string& strPublicKey)
 {
     EVP_MD_CTX *mdctx = NULL;
     EVP_PKEY *key = NULL;
@@ -436,7 +464,8 @@ clean:
     return -1;
 }
 #else
-static int get_licence(char* pLicen, size_t* pLicenLen, const char* pData, uint32_t uDataLen, const string& strPrivateKey)
+static int get_licence(char* pLicen, size_t* pLicenLen,
+        const char* pData, uint32_t uDataLen, const string& strPrivateKey)
 {
 	int iRet = 0;
 	unsigned char hash[32];
@@ -469,7 +498,8 @@ end:
 	return iRet;
 }
 
-static int check_licence(const char* pLicen, uint32_t uLicenLen, const char* pData, uint32_t uDataLen, const string& strPublicKey)
+static int check_licence(const char* pLicen, uint32_t uLicenLen,
+        const char* pData, uint32_t uDataLen, const string& strPublicKey)
 {
 	int iRet = 0;
 	unsigned char hash[32];
@@ -514,7 +544,8 @@ static int tls_check_signature_inner(
     if(ret != 0){
         return CHECK_ERR6;
     }
-    ret = check_licence(raw_sig.data(), raw_sig.size(), content.data(), content.size(), strPubKey);
+    ret = check_licence(raw_sig.data(), raw_sig.size(),
+            content.data(), content.size(), strPubKey);
     if(ret != 0){
         return CHECK_ERR8;
     }
@@ -525,7 +556,9 @@ static int tls_check_signature_inner(
 
 using namespace tls_signature_inner;
 
-TLS_API int tls_gen_signature(const string& strJson,string& strSig,const char* pPriKey,uint32_t uPriKeyLen,string& strErrMsg,uint32_t dwFlag)
+TLS_API int tls_gen_signature(const string& strJson,
+        string& strSig, const char* pPriKey,
+        uint32_t uPriKeyLen,string& strErrMsg,uint32_t dwFlag)
 {
 	char pLicen[1024];
 	size_t LicenLen = sizeof(pLicen);
@@ -581,10 +614,11 @@ TLS_API int tls_gen_signature(const string& strJson,string& strSig,const char* p
 	return 0;
 }
 
-std::string get_sig_version(rapidjson::Document& sig)
+// 获取到签名中的 ver 字段值，默认为 1.0
+std::string get_sig_version(rapidjson::Document& sigDoc)
 {
-    if (sig.HasMember("TLS.ver")) {
-        return sig["TLS.ver"].GetString();
+    if (sigDoc.HasMember("TLS.ver") && sigDoc["TLS.ver"].IsString()) {
+        return sigDoc["TLS.ver"].GetString();
     } else {
         return "1.0";
     }
@@ -610,7 +644,6 @@ TLS_API int tls_check_signature_ex(
     uint32_t& initTime,
     std::string& errMsg)
 {
-
     if (sig.empty()) {
         errMsg = "sig is empty";
         return CHECK_ERR1;
@@ -645,6 +678,7 @@ TLS_API int tls_check_signature_ex(
     }
 }
 
+
 TLS_API int tls_check_signature_ex2(
     const string& strSig,
     const string& strPubKey,
@@ -663,6 +697,7 @@ TLS_API int tls_check_signature_ex2(
     return tls_check_signature_ex(strSig, strPubKey.data(),
             strPubKey.size(), sigInfo, dwExpireTime, dwInitTime, strErrMsg);
 }
+
 
 TLS_API int tls_gen_signature_ex(
     uint32_t dwExpire,
@@ -699,7 +734,8 @@ TLS_API int tls_gen_signature_ex2_with_expire(
     string& strErrMsg)
 {
 	char buff[512];
-	int iLen = snprintf(buff, sizeof(buff), JSON_STRING, 0, strIdentifier.c_str(), "0", dwSdkAppid, dwExpire, API_VERSION);
+	int iLen = snprintf(buff, sizeof(buff), JSON_STRING, 0,
+            strIdentifier.c_str(), "0", dwSdkAppid, dwExpire, API_VERSION);
 	if (iLen >= (int)(sizeof(buff) - 1)) {
 		snprintf(buff,sizeof(buff),"gen sig buf is empty iLen:%d",iLen);
 		strErrMsg = buff;
@@ -731,7 +767,8 @@ TLS_API int tls_gen_userbuf_ticket(
     const std::string& strPriKey,
     const std::string& strUserbuf,
     std::string& strTicket,
-    std::string& strErrMsg){
+    std::string& strErrMsg)
+{
     rapidjson::Document json;
     json.SetObject();
     json.AddMember("TLS.sdk_appid", fmt::sprintf("%u" ,dwSdkAppid), json.GetAllocator());
@@ -755,7 +792,8 @@ TLS_API int tls_gen_userbuf_ticket(
     }
     uint8_t bin_ticket[1024*16];
     size_t bin_ticket_len = sizeof bin_ticket;
-    ret = get_licence(reinterpret_cast<char*>(bin_ticket), &bin_ticket_len, content.data(), content.size(), strPriKey);
+    ret = get_licence(reinterpret_cast<char*>(bin_ticket), &bin_ticket_len,
+            content.data(), content.size(), strPriKey);
     if(ret != 0){
         strErrMsg = fmt::printf("get_licence failed:%#x", ret);
         return CHECK_ERR17;
@@ -770,6 +808,7 @@ TLS_API int tls_gen_userbuf_ticket(
     return JsonToSig(json, strTicket, strErrMsg);
 }
 
+
 TLS_API int tls_check_userbuf_ticket(
     const std::string& strTicket,
     const std::string& strPubKey,
@@ -778,12 +817,18 @@ TLS_API int tls_check_userbuf_ticket(
     uint32_t& dwExpireTime,
     uint32_t& dwInitTime,
     std::string& strUserbuf,
-    std::string& strErrMsg){
+    std::string& strErrMsg)
+{
     rapidjson::Document json;
     int ret = SigToJson(strTicket, json, strErrMsg);
     if (ret != 0) return ret;
+    std::string sigVersion = get_sig_version(json);
+    if ("2.0" == sigVersion) {
+        return verify_sig_v2(json, dwSdkAppid, strIdentifier,
+                strPubKey, dwInitTime, dwExpireTime, strUserbuf, strErrMsg);
+    }
     std::string content;
-    ret = JsonToUserbufSign(json ,content);
+    ret = JsonToUserbufSign(json, content);
     if (ret != 0) {
         return CHECK_ERR4;
     }
@@ -817,24 +862,21 @@ TLS_API int tls_check_userbuf_ticket(
     return 0;
 }
 
-TLS_API int gen_sig(uint32_t sdkappid, const std::string& identifier, const std::string& priKey, std::string& sig) {
+
+TLS_API int gen_sig(uint32_t sdkappid, const std::string& identifier,
+        const std::string& priKey, std::string& sig)
+{
     std::string innerPriKey = priKey;
     std::string errMsg;
     return tls_gen_signature_ex2(sdkappid, identifier, sig, innerPriKey, errMsg);
 }
 
-/**
- * @brief 生成签名函数 v2 版本
- * @param sdkappid 应用ID
- * @param identifier 用户账号，utf-8 编码
- * @param key 密钥
- * @param expire 有效期，单位秒
- * @param errMsg 错误信息
- * @return 0 为成功，非 0 为失败
- */
-TLS_API int gen_sig_v2(uint32_t sdkappid, const std::string& identifier,
-        const std::string& key, int expire, std::string& sig, std::string& errMsg) {
 
+// 生成签名，v2 版本，对称密钥
+TLS_API int gen_sig_v2(uint32_t sdkappid, const std::string& identifier,
+        const std::string& key, int expire,
+        std::string& sig, std::string& errMsg)
+{
     uint64_t currTime = time(NULL);
     std::string base64RawSig = hmacsha256(sdkappid, identifier, currTime, expire, key);
     rapidjson::Document sigDoc;
@@ -848,14 +890,47 @@ TLS_API int gen_sig_v2(uint32_t sdkappid, const std::string& identifier,
     return JsonToSig(sigDoc, sig, errMsg);
 }
 
-// 使用 hmac sha256 生存 sig
-static std::string hmacsha256(uint32_t sdkappid, const std::string& identifier,
-        uint64_t initTime, uint64_t expire, const std::string& key)
+
+// 生成带 userbuf 的签名，v2 版本，对称密钥
+TLS_API int gen_sig_v2_with_userbuf(
+        uint32_t sdkappid,
+        const std::string& identifier,
+		const std::string& key,
+        int expire,
+        const std::string& userBuf,
+        std::string& sig,
+        std::string& errMsg)
+{
+    uint64_t currTime = time(NULL);
+    std::string base64UserBuf;
+    base64_encode(userBuf.data(), userBuf.length(), base64UserBuf);
+    std::string base64RawSig = hmacsha256(
+            sdkappid, identifier, currTime, expire, key, base64UserBuf);
+    rapidjson::Document sigDoc;
+    sigDoc.SetObject();
+    sigDoc.AddMember("TLS.ver", "2.0", sigDoc.GetAllocator());
+    sigDoc.AddMember("TLS.sdkappid", sdkappid, sigDoc.GetAllocator());
+    sigDoc.AddMember("TLS.identifier", identifier, sigDoc.GetAllocator());
+    sigDoc.AddMember("TLS.time", currTime, sigDoc.GetAllocator());
+    sigDoc.AddMember("TLS.expire", expire, sigDoc.GetAllocator());
+    sigDoc.AddMember("TLS.userbuf", base64UserBuf, sigDoc.GetAllocator());
+    sigDoc.AddMember("TLS.sig", base64RawSig, sigDoc.GetAllocator());
+    return JsonToSig(sigDoc, sig, errMsg);
+}
+
+
+static std::string __hmacsha256(uint32_t sdkappid,
+        const std::string& identifier, uint64_t initTime,
+        uint64_t expire, const std::string& key,
+        const std::string& base64UserBuf, bool userBufEnabled)
 {
     std::string rawContentToBeSigned = "TLS.identifier:" + identifier + "\n"
         + "TLS.sdkappid:" + std::to_string(static_cast<long long>(sdkappid)) + "\n"
         + "TLS.time:" + std::to_string(static_cast<long long>(initTime)) + "\n"
         + "TLS.expire:" + std::to_string(static_cast<long long>(expire)) + "\n";
+    if (true == userBufEnabled) {
+        rawContentToBeSigned += "TLS.userbuf:" + base64UserBuf + "\n";
+    }
     std::string base64Result;
 
 #ifdef USE_OPENSSL
@@ -872,7 +947,8 @@ static std::string hmacsha256(uint32_t sdkappid, const std::string& identifier,
 
     mbedtls_md_init(&ctx);
     mbedtls_md_setup(&ctx, mbedtls_md_info_from_type(md_type), 1);
-    mbedtls_md_hmac_starts(&ctx, reinterpret_cast<const unsigned char *>(key.data()), key.length());
+    mbedtls_md_hmac_starts(&ctx,
+            reinterpret_cast<const unsigned char *>(key.data()), key.length());
     mbedtls_md_hmac_update(&ctx,
             reinterpret_cast<const unsigned char *>(rawContentToBeSigned.data()),
             rawContentToBeSigned.length());
@@ -883,30 +959,61 @@ static std::string hmacsha256(uint32_t sdkappid, const std::string& identifier,
     return base64Result;
 }
 
+
+// 使用 hmac sha256 生成 sig
+static std::string hmacsha256(uint32_t sdkappid,
+        const std::string& identifier, uint64_t initTime,
+        uint64_t expire, const std::string& key)
+{
+    return __hmacsha256(sdkappid, identifier,
+            initTime, expire, key, "", false);
+}
+
+
+// 使用 hmac sha256 生成带 userbuf 的 sig
+static std::string hmacsha256(uint32_t sdkappid,
+        const std::string& identifier, uint64_t initTime,
+        uint64_t expire, const std::string& key,
+        const std::string& base64UserBuf)
+{
+    return __hmacsha256(sdkappid, identifier,
+            initTime, expire, key, base64UserBuf, true);
+}
+
+
 /**
- * @brief 校验签名 v2 版本 内部函数，用户校验 sig 请使用 @see tls_check_signature_ex
+ * @brief 校验签名 v2 版本 内部函数
+ * 
+ * @param sig 签名内容
  * @param sdkappid 应用 ID
  * @param identifier 用户账号
  * @param key 加密 key
- * @param sig 签名内容
+ * @param initTime 返回的 sig 生成时间，unix 时间戳
+ * @param expireTime 返回的有效期，单位秒
+ * @param userBuf 返回的用户数据
+ * @param userBufEnabled 用户数据启用标志
  * @param errMsg 如果出错这里有错误信息
+ *
  * @return 0 为成功，非 0 为失败
  */
-static int verify_sig_v2(
+static int __verify_sig_v2(
         const rapidjson::Document& sig,
         uint32_t sdkappid,
         const std::string& identifier,
         const std::string& key,
         uint32_t& initTime,
         uint32_t& expireTime,
+        std::string& userBuf,
+        bool userBufEnabled,
         std::string& errMsg)
 {
-
     // 先校验字段
-    if (!sig.HasMember("TLS.identifier") || !sig["TLS.identifier"].IsString()) {
+    if (!sig.HasMember("TLS.identifier")
+            || !sig["TLS.identifier"].IsString()) {
         errMsg = "identifier field is missing";
         return CHECK_ERR7;
     }
+
     std::string identifierInSig = sig["TLS.identifier"].GetString();
     if (identifierInSig != identifier) {
         errMsg = "identifier doesn't match";
@@ -937,23 +1044,76 @@ static int verify_sig_v2(
 
     // 校验有效期
     uint64_t currTime = time(NULL);
-    if (currTime > static_cast<uint64_t>(initTime)+ static_cast<uint64_t>(expireTime)) {
+    if (currTime > static_cast<uint64_t>(initTime)
+            + static_cast<uint64_t>(expireTime)) {
         errMsg = "sig expired";
         return CHECK_ERR9;
     }
 
-    // 校验 sig
+    // 获取 sig 字段
     if (!sig.HasMember("TLS.sig") || !sig["TLS.sig"].IsString()) {
         errMsg = "sig field is missing";
         return CHECK_ERR7;
     }
-    std::string sigInReq = sig["TLS.sig"].GetString();
-    std::string sigCalculated = hmacsha256(sdkappid, identifier, initTime, expireTime, key);
-    if (sigInReq != sigCalculated) {
+    std::string sigInSig = sig["TLS.sig"].GetString();
+
+    // 尝试获取 userbuf
+    std::string sigCalculated;
+    if (true == userBufEnabled && sig.HasMember("TLS.userbuf")) {
+        if (!sig["TLS.userbuf"].IsString()) {
+            errMsg = "userbuf is not type of string";
+            return CHECK_ERR15;
+        }
+        std::string base64UserBuf = sig["TLS.userbuf"].GetString();
+        int ret = base64_decode(base64UserBuf.data(),
+                base64UserBuf.length(), userBuf);
+        if (0 != ret) {
+            errMsg = fmt::sprintf("base64 decode userbuf error:%#x", ret);
+            return CHECK_ERR15;
+        }
+        sigCalculated = hmacsha256(sdkappid, identifier,
+                initTime, expireTime, key, base64UserBuf);
+    } else {
+        sigCalculated = hmacsha256(sdkappid, identifier,
+                initTime, expireTime, key);
+    }
+
+    // 校验 sig
+    if (sigInSig != sigCalculated) {
         errMsg = "sig error";
         return CHECK_ERR8;
     }
 
     return 0;
+}
+
+
+static int verify_sig_v2(
+        const rapidjson::Document& sigDoc,
+        uint32_t sdkappid,
+        const std::string& identifier,
+        const std::string& key,
+        uint32_t& initTime,
+        uint32_t& expireTime,
+        std::string& errMsg)
+{
+    std::string userBuf;
+    return __verify_sig_v2(sigDoc, sdkappid, identifier, key,
+            initTime, expireTime, userBuf, false, errMsg);
+}
+
+
+static int verify_sig_v2(
+        const rapidjson::Document& sigDoc,
+        uint32_t sdkappid,
+        const std::string& identifier,
+        const std::string& key,
+        uint32_t& initTime,
+        uint32_t& expireTime,
+        std::string& userBuf,
+        std::string& errMsg)
+{
+    return __verify_sig_v2(sigDoc, sdkappid, identifier, key,
+            initTime, expireTime, userBuf, true, errMsg);
 }
 

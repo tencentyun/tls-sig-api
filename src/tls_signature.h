@@ -57,7 +57,8 @@ TLS_API int tls_gen_signature_ex2_with_expire(
     uint32_t dwExpire,
     std::string& strSig,
     std::string& strPriKey,
-    std::string& strErrMsg);
+    std::string& strErrMsg
+);
 
 /*
  * @brief tls_gen_signature_ex2 接收一系列参数，返回 sig，有效采用默认的180天
@@ -108,7 +109,8 @@ TLS_API int tls_check_signature_ex(
     const SigInfo& sigInfo,
     uint32_t& expireTime,
     uint32_t& initTime,
-    std::string& errMsg);
+    std::string& errMsg
+);
 
 /**
  * @brief 验证 sig 是否合法
@@ -162,7 +164,7 @@ TLS_API int tls_gen_signature(
     uint32_t uPriKeyLen,
     std::string& strErrMsg,
     uint32_t dwFlag = 0
-    );
+);
 
 enum {
 	CHECK_ERR1  =  1,       // sig 为空
@@ -189,7 +191,7 @@ enum {
 #define API_VERSION "201803230000"
 
 /*
- * @brief tls_gen_userbuf_ticket
+ * @brief 生成带 userbuf 的签名，非对称密钥
  *
  * @param dwSdkAppid 创建应用时页面上分配的 sdkappid
  * @param strIdentifier 用户标示符，也就是我们常说的用户 id
@@ -209,6 +211,7 @@ TLS_API int tls_gen_userbuf_ticket(
     const std::string& strUserbuf,
     std::string& strTicket,
     std::string& strErrMsg);
+
 
 /**
  * @brief 验证 sig 是否合法
@@ -235,25 +238,74 @@ TLS_API int tls_check_userbuf_ticket(
     std::string& strErrMsg
 );
 
-TLS_API int gen_sig(uint32_t sdkappid, const std::string& identifier, const std::string& priKey, std::string& sig);
 
 /**
- * @brief 生成签名函数 v2 版本
+ * @brief 生成签名函数，非对称密钥
+ *
+ * @param sdkappid 应用ID
+ * @param identifier 用户账号，utf-8 编码
+ * @param priKey 私钥内容
+ * @param sig 返回的 sig
+ *
+ * @return 0 为成功，非 0 为失败
+ */
+TLS_API int gen_sig(
+        uint32_t sdkappid,
+        const std::string& identifier,
+        const std::string& priKey,
+        std::string& sig);
+
+/**
+ * @brief 生成签名函数 v2 版本，对称密钥
  * @param sdkappid 应用ID
  * @param identifier 用户账号，utf-8 编码
  * @param key 密钥
  * @param expire 有效期，单位秒
+ * @param sig 返回的 sig
  * @param errMsg 错误信息
+ *
  * @return 0 为成功，非 0 为失败
  */
-TLS_API int gen_sig_v2(uint32_t sdkappid, const std::string& identifier,
-		const std::string& key, int expire, std::string& sig, std::string& errMsg);
+TLS_API int gen_sig_v2(
+        uint32_t sdkappid,
+        const std::string& identifier,
+		const std::string& key,
+        int expire,
+        std::string& sig,
+        std::string& errMsg);
+
+/**
+ * @brief 生成带 userbuf 签名函数 v2 版本，对称密钥
+ *
+ * @param sdkappid 应用ID
+ * @param identifier 用户账号，utf-8 编码
+ * @param key 密钥
+ * @param expire 有效期，单位秒
+ * @param userBuf 用户数据
+ * @param sig 返回的 sig
+ * @param errMsg 错误信息
+ *
+ * @return 0 为成功，非 0 为失败
+ */
+TLS_API int gen_sig_v2_with_userbuf(
+        uint32_t sdkappid,
+        const std::string& identifier,
+		const std::string& key,
+        int expire,
+        const std::string& userBuf,
+        std::string& sig,
+        std::string& errMsg);
+
 
 int thread_setup();
 void thread_cleanup();
 
-namespace tls_signature_inner {
-TLS_API int SigToJson(const std::string &sig, std::string &json, std::string  &errmsg);
+namespace tls_signature_inner
+{
+
+TLS_API int SigToJson(const std::string &sig,
+        std::string &json, std::string  &errmsg);
+
 }
 
 #endif
