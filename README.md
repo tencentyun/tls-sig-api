@@ -90,26 +90,6 @@ if (0 != ret) {
 tls_gen_signature_ex2_with_expire
 ```
 
-### v2 版本使用
-```C
-#include "tls_signature.h"
-#include <string>
-#include <iostream>
-
-std::string key = "5bd2850fff3ecb11d7c805251c51ee463a25727bddc2385f3fa8bfee1bb93b5e";
-
-std::string sig;
-std::sgring errMsg;
-int ret = gen_sig_v2(140000000, "xiaojun", key, 180*86400, sig, errMsg);
-if (0 != ret) {
-	std::cout << "gen_sig_v2 failed " << ret << " " << errMsg << std::endl;
-} else {
-	std::cout << "gen_sig_v2 " << sig << std::endl;
-}
-
-```
-
-
 ### 多线程支持
 因为类 Unix 目前默认使用了 openssl，需要在多线程程序初始化时调用。windows 版本无此问题。
 ```C
