@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 project(tls_sig_api)
 
+SET(CMAKE_CXX_FLAGS "-std=c++0x")
+
 if(UNIX)
     find_package(ZLIB REQUIRED)
     find_package(OpenSSL REQUIRED)
