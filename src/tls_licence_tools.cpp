@@ -39,8 +39,8 @@ static void usage(const string& prog)
 	cout << "\tverify sig e.g.: " << prog << " verifyuser public.pem sig 1400000000 xiaojun" << endl;
 	cout << "\tverify2 sig: " << prog << " verify2 key sig_file sdkappid identifier" << endl;
 	cout << "\tverify2 sig e.g.: " << prog << " verify2 5bd2850fff3ecb11d7c805251c51ee463a25727bddc2385f3fa8bfee1bb93b5e sig 1400000000 xiaojun" << endl;
-	cout << "\tverify2user sig: " << prog << " verify2user key sig_file sdkappid identifier" << endl;
-	cout << "\tverify2user sig e.g.: " << prog << " verify2user 5bd2850fff3ecb11d7c805251c51ee463a25727bddc2385f3fa8bfee1bb93b5e sig 1400000000 xiaojun" << endl;
+	cout << "\tverify2user sig: " << prog << " verify2user key sig_file sdkappid identifier userbuf" << endl;
+	cout << "\tverify2user sig e.g.: " << prog << " verify2user 5bd2850fff3ecb11d7c805251c51ee463a25727bddc2385f3fa8bfee1bb93b5e sig 1400000000 xiaojun abc" << endl;
 
 	cout << "\tdump sig e.g.: " << prog << " dump sigtext" << endl;
 }
@@ -394,7 +394,7 @@ static int verify2_sig(const string& key, string& sig_file,
 }
 
 static int verify2_sig_with_userbuf(const string& key, string& sig_file,
-        string& sdkappid, string& identifier) {
+        string& sdkappid, string& identifier, string& userbuf) {
 
     // 首先读取 sig 文件中的内容
     // 我们的程序虽然是用的是这种方式，但是开发者在使用的时候肯定是用缓冲区直接调用接口
@@ -432,7 +432,6 @@ static int verify2_sig_with_userbuf(const string& key, string& sig_file,
     ss >> int_sdkappid;
     uint32_t expire_time;
     uint32_t init_time;
-    std::string userbuf;
     int ret = tls_check_userbuf_ticket(sig_str, key, int_sdkappid,
             identifier, expire_time, init_time, userbuf, err_msg);
     if (0 != ret) {
@@ -532,12 +531,13 @@ int main(int argc, char * argv[]) {
         std::string sdkappid_str = argv[4];
         std::string identifier = argv[5];
         ret = verify2_sig(key, sig_file, sdkappid_str, identifier);
-    } else if (0 == strcmp(cmd, "verify2user") && 6 == argc) {
+    } else if (0 == strcmp(cmd, "verify2user") && 7 == argc) {
         std::string key = argv[2];
         std::string sig_file = argv[3];
         std::string sdkappid_str = argv[4];
         std::string identifier = argv[5];
-        ret = verify2_sig_with_userbuf(key, sig_file, sdkappid_str, identifier);
+        std::string userbuf = argv[6];
+        ret = verify2_sig_with_userbuf(key, sig_file, sdkappid_str, identifier, userbuf);
     } else {
         usage(argv[0]);
         return -1;
