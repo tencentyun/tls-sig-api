@@ -1064,15 +1064,21 @@ static int __verify_sig_v2(
             errMsg = "userbuf is not type of string";
             return CHECK_ERR15;
         }
-        std::string base64UserBuf = sig["TLS.userbuf"].GetString();
-        int ret = base64_decode(base64UserBuf.data(),
-                base64UserBuf.length(), userBuf);
+        std::string base64UserBufInSig = sig["TLS.userbuf"].GetString();
+        std::string userBufInSig;
+        int ret = base64_decode(base64UserBufInSig.data(),
+                base64UserBufInSig.length(), userBufInSig);
         if (0 != ret) {
             errMsg = fmt::sprintf("base64 decode userbuf error:%#x", ret);
             return CHECK_ERR15;
         }
+        if (userBufInSig != userBuf) {
+            errMsg = fmt::sprintf("userbuf doesn't match");
+            return CHECK_ERR15;
+        }
+        userBuf = userBufInSig;
         sigCalculated = hmacsha256(sdkappid, identifier,
-                initTime, expireTime, key, base64UserBuf);
+                initTime, expireTime, key, base64UserBufInSig);
     } else {
         sigCalculated = hmacsha256(sdkappid, identifier,
                 initTime, expireTime, key);
