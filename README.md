@@ -75,6 +75,16 @@ tls-sig-api_xx/xxxx/mbedcrypto.lib
 #include <string>
 #include <iostream>
 
+// ！！！请注意！！！
+// 首位提示行 BEGIN ... 和 END ... 是私钥的一部分，请不要遗漏
+// 密钥中间的换行符 \n 也是密钥的一部分，请不要遗漏
+std::string priKeyContent =
+    "-----BEGIN PRIVATE KEY-----\n"
+    "MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgocPyal8vljJjNtRF\n"
+    "nxiXMYqOdwTZq3UQUMJc6ULcPMGhRANCAAQo9wBEsKC01do8bLbLWC1E+ng3DyNr\n"
+    "HN0BrdhjRKqtvbGJXusMDn16faL2ymccposI0lqki1NZN0mrYVq14AGD\n"
+    "-----END PRIVATE KEY-----";
+
 std::string sig;
 int ret = gen_sig(140000000, "xiaojun", priKeyContent, sig);
 if (0 != ret) {
